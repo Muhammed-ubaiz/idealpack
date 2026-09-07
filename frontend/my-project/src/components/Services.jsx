@@ -187,7 +187,7 @@ function Services() {
       {/* 4. CUSTOM PACKAGING */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white border-y border-blue-100">
         <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm aspect-4/3">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm aspect-[4/3]">
             <img
               src={customImage}
               alt="Ideal Pack packaging solutions"

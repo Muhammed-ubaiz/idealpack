@@ -279,14 +279,14 @@ function Products() {
                 onClick={() => goToCategory(cat.id)}
                 className="group relative overflow-hidden rounded-2xl border border-gray-100 shadow-lg shadow-blue-950/10 hover:shadow-xl transition-all duration-300 text-left"
               >
-                <div className="aspect-4/3 overflow-hidden bg-white">
+                <div className="aspect-[4/3] overflow-hidden bg-white">
                   <img
                     src={cat.image}
                     alt={cat.label}
                     className="w-full h-full object-contain p-4 scale-100 group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="absolute inset-0 bg-linear-to-t from-blue-950/85 via-blue-950/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/10 to-transparent" />
 
                 <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
                   <h3 className="text-white font-semibold text-sm sm:text-base">{cat.label}</h3>

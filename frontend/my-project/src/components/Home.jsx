@@ -544,7 +544,7 @@ function Home() {
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-blue-950/10 hover:shadow-xl transition-all duration-300"
             >
               <div
-                className={`h-[180px] sm:h-[200px] md:h-auto md:aspect-4/3 shrink-0 overflow-hidden ${
+                className={`h-[180px] sm:h-[200px] md:h-auto md:aspect-[4/3] shrink-0 overflow-hidden ${
                   c.image ? 'bg-white' : ''
                 }`}
               >
@@ -559,7 +559,7 @@ function Home() {
                   style={{ objectPosition: c.position }}
                 />
               </div>
-              <div className="hidden md:block absolute inset-0 bg-linear-to-t from-blue-950/85 via-blue-950/10 to-transparent" />
+              <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/10 to-transparent" />
 
               <div className="relative flex-1 p-4 sm:p-5 md:absolute md:inset-x-0 md:bottom-0 md:flex-none">
                 <h3 className="font-semibold text-base text-slate-900 md:text-white">{c.label}</h3>

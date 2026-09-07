@@ -1,0 +1,16 @@
+# The React + Vite app lives two levels down in the repo.
+# `base` makes Netlify run the build inside that folder, so `command` and
+# `publish` are resolved relative to it (publish -> frontend/my-project/dist).
+[build]
+  base = "frontend/my-project"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA fallback for React Router (also present as public/_redirects).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
