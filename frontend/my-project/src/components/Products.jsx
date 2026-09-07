@@ -1,8 +1,17 @@
 import { useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, ShieldCheck, BadgeCheck, Briefcase, ArrowRight } from 'lucide-react'
 import { categories, products } from '../data/products'
+
+// URL-safe category slugs the ?category= query param is validated against.
+const validCategoryIds = categories.map((category) => category.id)
+
+/** Resolve the active category from the URL, falling back to 'all'. */
+const readCategoryParam = (params) => {
+  const value = params.get('category')
+  return value && validCategoryIds.includes(value) ? value : 'all'
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 22 },
@@ -35,9 +44,30 @@ const featureItems = [
 ]
 
 function Products() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  // The URL (?category=slug) is the single source of truth for the active
+  // category, so deep links, refreshes and Back/Forward all resolve correctly.
+  const activeCategory = readCategoryParam(searchParams)
+
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeCategory, setActiveCategory] = useState('all')
   const gridRef = useRef(null)
+
+  // Single entry point for changing the category: writes the slug to the URL
+  // (or clears it for "all"), which re-renders and updates the highlighted tab.
+  const selectCategory = (categoryId) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (categoryId && categoryId !== 'all') {
+          next.set('category', categoryId)
+        } else {
+          next.delete('category')
+        }
+        return next
+      },
+      { replace: false },
+    )
+  }
 
   const filteredProducts = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
@@ -52,7 +82,7 @@ function Products() {
   }, [searchQuery, activeCategory])
 
   const goToCategory = (categoryId) => {
-    setActiveCategory(categoryId)
+    selectCategory(categoryId)
     gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -66,7 +96,7 @@ function Products() {
         type="button"
         aria-hidden={isClone || undefined}
         tabIndex={isClone ? -1 : undefined}
-        onClick={() => setActiveCategory(cat.id)}
+        onClick={() => selectCategory(cat.id)}
         className={`${
           isClone ? 'sm:hidden ' : ''
         }shrink-0 whitespace-nowrap mr-2 sm:mr-0 px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${

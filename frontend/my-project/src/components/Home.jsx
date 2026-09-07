@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import heroVideo from '../assets/hero section.mp4'
+import heroPoster from '../assets/hero-poster.jpg'
 import productsImage from '../assets/ChatGPT Image Sep 1, 2026, 03_43_39 PM.png'
 import kraftPackagingImage from '../assets/ChatGPT Image Sep 2, 2026, 03_31_56 PM.png'
 import foilContainersImage from '../assets/ChatGPT Image Sep 2, 2026, 03_36_23 PM.png'
@@ -9,6 +10,14 @@ import foodContainersImage from '../assets/ChatGPT Image Sep 2, 2026, 03_37_49 P
 import tissuesNapkinsImage from '../assets/ChatGPT Image Sep 2, 2026, 03_39_33 PM.png'
 import clingFilmBagsImage from '../assets/ChatGPT Image Sep 2, 2026, 03_40_25 PM.png'
 import hygieneSolutionsImage from '../assets/ChatGPT Image Sep 2, 2026, 03_41_59 PM.png'
+import { categories as productCategoryData } from '../data/products'
+
+// Reuse the Products page category data so the "Explore Our Products" cards
+// link to the same URL-safe slugs the Products page filters by. Keyed by the
+// label already shown on each card — no category data is duplicated here.
+const categorySlugByLabel = Object.fromEntries(
+  productCategoryData.map((category) => [category.label, category.id]),
+)
 
 const heroFeatures = [
   {
@@ -39,12 +48,6 @@ const heroFeatures = [
 ]
 
 const bottomFeatures = [
-  {
-    label: 'Eco-Friendly Solutions',
-    icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3C7 3 4 7 4 11c0 5 4 9 8 10 4-1 8-5 8-10 0-4-3-8-8-8Z" />
-    ),
-  },
   {
     label: 'Food Safe & Hygienic',
     icon: <path strokeLinecap="round" strokeLinejoin="round" d="M5 12l4 4 10-10" />,
@@ -312,6 +315,23 @@ function Home() {
   const [statsInView, setStatsInView] = useState(false)
   const prefersReducedMotion = useReducedMotion()
 
+  // Hero background video: the poster paints immediately; the video is only
+  // mounted after first paint (and skipped on data-saver connections) so it
+  // never blocks the hero render, then fades in once it can play.
+  const [mountVideo, setMountVideo] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
+
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.connection?.saveData) return
+    const start = () => setMountVideo(true)
+    if (typeof requestIdleCallback === 'function') {
+      const id = requestIdleCallback(start, { timeout: 2000 })
+      return () => cancelIdleCallback(id)
+    }
+    const id = setTimeout(start, 200)
+    return () => clearTimeout(id)
+  }, [])
+
   useEffect(() => {
     const el = statsRef.current
     if (!el) return
@@ -346,16 +366,34 @@ function Home() {
 
   return (
     <section className="bg-white">
-      <div ref={heroRef} className="relative overflow-hidden min-h-[85vh] md:min-h-screen">
-        <motion.video
-          src={heroVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
+      <div ref={heroRef} className="relative overflow-hidden min-h-[85vh] md:min-h-screen bg-blue-950">
+        {/* Lightweight poster — paints immediately so the hero is never black
+            while the video downloads, and stays behind the video as a fallback. */}
+        <motion.img
+          src={heroPoster}
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
           className="absolute inset-0 w-full h-full object-cover"
           style={prefersReducedMotion ? undefined : { scale: bgScale, y: bgY }}
         />
+        {mountVideo && (
+          <motion.video
+            src={heroVideo}
+            poster={heroPoster}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            onCanPlay={() => setVideoReady(true)}
+            onPlaying={() => setVideoReady(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              videoReady ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={prefersReducedMotion ? undefined : { scale: bgScale, y: bgY }}
+          />
+        )}
         <div className="absolute inset-0 bg-blue-950/55" />
 
         <motion.div
@@ -431,7 +469,7 @@ function Home() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 mt-6 relative"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-6 relative"
         >
           {bottomFeatures.map((f) => (
             <motion.div
@@ -537,12 +575,19 @@ function Home() {
           viewport={{ once: true, amount: 0.2 }}
           className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6"
         >
-          {productCategories.map((c) => (
+          {productCategories.map((c) => {
+            const slug = categorySlugByLabel[c.label]
+            return (
             <motion.div
               key={c.label}
               variants={fadeUp}
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-blue-950/10 hover:shadow-xl transition-all duration-300"
             >
+              <Link
+                to={slug ? `/products?category=${slug}` : '/products'}
+                aria-label={`View ${c.label} products`}
+                className="absolute inset-0 z-10"
+              />
               <div
                 className={`h-[180px] sm:h-[200px] md:h-auto md:aspect-[4/3] shrink-0 overflow-hidden ${
                   c.image ? 'bg-white' : ''
@@ -563,16 +608,16 @@ function Home() {
 
               <div className="relative flex-1 p-4 sm:p-5 md:absolute md:inset-x-0 md:bottom-0 md:flex-none">
                 <h3 className="font-semibold text-base text-slate-900 md:text-white">{c.label}</h3>
-                <a
-                  href="#"
-                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-500 md:text-blue-300 md:hover:text-white transition-colors"
+                <span
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 group-hover:text-blue-500 md:text-blue-300 md:group-hover:text-white transition-colors"
                 >
                   View Products
                   <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-                </a>
+                </span>
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </motion.div>
       </div>
 
