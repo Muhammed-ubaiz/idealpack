@@ -12,7 +12,7 @@ import LegalPage from './components/LegalPage'
 import NotFound from './components/NotFound'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
-import AIChatWidget from './components/AIChatWidget'
+import WhatsAppButton from './components/WhatsAppButton'
 import './App.css'
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
       <Route path="*" element={<NotFound />} />
     </Routes>
     <Footer />
-    <AIChatWidget />
+    <WhatsAppButton />
     </>
   )
 }
