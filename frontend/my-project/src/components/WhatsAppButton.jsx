@@ -1,21 +1,34 @@
 import { whatsappLink } from '../data/contact'
+import { confirmAction } from '../lib/alerts'
 
 /**
  * Global floating WhatsApp contact button.
  *
  * Rendered once in App (shared layout) so it appears on every page and
- * survives route changes. Opens a wa.me chat with the official Ideal Pack
- * number (from data/contact.js) and a pre-filled enquiry message.
+ * survives route changes. Clicking it asks for confirmation, then opens a
+ * wa.me chat with the official Ideal Pack number (from data/contact.js) and
+ * a pre-filled enquiry message.
  */
 const PREFILL =
   'Hello Ideal Pack, I would like to know more about your packaging products.'
 
 export default function WhatsAppButton() {
+  const handleClick = async () => {
+    const ok = await confirmAction({
+      title: 'Chat with Ideal Pack',
+      text: 'Would you like to continue to WhatsApp and chat with our team?',
+      confirmButtonText: 'Continue to WhatsApp',
+      cancelButtonText: 'Cancel',
+    })
+    if (ok) {
+      window.open(whatsappLink(PREFILL), '_blank', 'noopener,noreferrer')
+    }
+  }
+
   return (
-    <a
-      href={whatsappLink(PREFILL)}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      type="button"
+      onClick={handleClick}
       aria-label="Chat with Ideal Pack on WhatsApp"
       className="group fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] flex h-[52px] w-[52px] sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/40 ring-4 ring-[#25D366]/15 transition-transform duration-300 ease-out hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#25D366]"
     >
@@ -31,6 +44,6 @@ export default function WhatsAppButton() {
       <span className="pointer-events-none absolute right-full mr-3 hidden translate-x-1 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 opacity-0 shadow-md ring-1 ring-black/5 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 sm:block">
         Chat with us
       </span>
-    </a>
+    </button>
   )
 }

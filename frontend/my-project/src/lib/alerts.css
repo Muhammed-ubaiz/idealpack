@@ -1,0 +1,119 @@
+/* Ideal Pack — shared SweetAlert2 theme.
+   One consistent look for every dialog on the site: white surface,
+   Ideal Pack blue primary action, dark navy headings, soft rounded card. */
+
+.ip-swal-popup {
+  border-radius: 1rem;
+  padding: 2rem 1.75rem 1.75rem;
+  background: #ffffff;
+  box-shadow: 0 24px 60px -15px rgba(15, 23, 42, 0.28);
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+.ip-swal-title {
+  color: #0f172a;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ip-swal-text {
+  color: #475569;
+  font-size: 0.925rem;
+  line-height: 1.6;
+}
+
+.ip-swal-actions {
+  gap: 0.625rem;
+  margin-top: 1.35rem;
+}
+
+.ip-swal-confirm,
+.ip-swal-cancel {
+  border-radius: 0.7rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ip-swal-confirm {
+  background-color: #60a5fa; /* Ideal Pack blue-400 */
+  color: #ffffff;
+  box-shadow: 0 8px 20px -6px rgba(96, 165, 250, 0.5);
+}
+
+.ip-swal-confirm:hover {
+  background-color: #3b82f6; /* blue-500 */
+  transform: translateY(-1px);
+}
+
+.ip-swal-cancel {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.ip-swal-cancel:hover {
+  background-color: #e2e8f0;
+}
+
+.ip-swal-confirm:focus-visible,
+.ip-swal-cancel:focus-visible {
+  outline: 2px solid rgba(96, 165, 250, 0.45);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Subtle, non-distracting entrance / exit */
+.ip-swal-show {
+  animation: ip-swal-in 0.22s ease-out;
+}
+
+.ip-swal-hide {
+  animation: ip-swal-out 0.15s ease-in;
+}
+
+@keyframes ip-swal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ip-swal-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* Mobile: full-width buttons, comfortable padding */
+@media (max-width: 480px) {
+  .ip-swal-popup {
+    padding: 1.5rem 1.25rem 1.25rem;
+    width: calc(100% - 2rem);
+  }
+  .ip-swal-actions {
+    flex-direction: column-reverse;
+  }
+  .ip-swal-confirm,
+  .ip-swal-cancel {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ip-swal-show,
+  .ip-swal-hide {
+    animation: none;
+  }
+}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { alertSuccess, alertValidation, showLoading } from '../lib/alerts'
 import {
   Phone,
   MessageCircle,
@@ -120,7 +121,7 @@ const emptyForm = { name: '', email: '', phone: '', subject: '', message: '' }
 function Contact() {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
-  const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [openFaq, setOpenFaq] = useState(null)
 
   const update = (field) => (e) => {
@@ -156,13 +157,32 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    if (submitting) return
+
     const next = validate()
     setErrors(next)
-    if (Object.keys(next).length === 0) {
-      window.location.href = buildMailto(form)
-      setSent(true)
-      setForm(emptyForm)
+    if (Object.keys(next).length > 0) {
+      // Inline field errors stay; SweetAlert just draws attention to them.
+      alertValidation()
+      return
     }
+
+    setSubmitting(true)
+    showLoading('Sending...')
+
+    // No backend: hand the enquiry to the visitor's email client.
+    window.location.href = buildMailto(form)
+
+    // Let the mailto handoff settle, then confirm and reset the form.
+    window.setTimeout(() => {
+      setForm(emptyForm)
+      setErrors({})
+      setSubmitting(false)
+      alertSuccess(
+        'Message Sent!',
+        'Thank you for contacting Ideal Pack. Our team will get back to you shortly.',
+      )
+    }, 600)
   }
 
   const fieldClass = (field) =>
@@ -274,29 +294,7 @@ function Contact() {
           {/* RIGHT — form */}
           <div className="mt-0">
             <div className="mt-0 rounded-[20px] border border-blue-400/40 bg-white p-6 sm:p-9">
-              {sent ? (
-                <div className="py-8 text-center">
-                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600">
-                    <Send className="h-5 w-5" strokeWidth={2} />
-                  </span>
-                  <h3 className="mt-4 text-lg font-bold text-slate-900">Almost there</h3>
-                  <p className="mt-2 text-sm text-slate-600">
-                    Your email app should have opened with your message ready to send to{' '}
-                    <a href={CONTACT.emailInfoHref} className="font-semibold text-red-600 hover:text-red-700">
-                      {CONTACT.emailInfo}
-                    </a>
-                    . If it didn&apos;t, email us directly or reach us on WhatsApp.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setSent(false)}
-                    className="mt-5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
-                  >
-                    Write another message
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div className="sm:col-span-1">
                     <label htmlFor="name" className="block text-xs font-semibold text-slate-900 mb-1.5">
                       Full Name <span className="text-red-600">*</span>
@@ -374,17 +372,17 @@ function Contact() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      className="group relative overflow-hidden inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-white text-blue-400 border border-blue-400 px-7 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-400/20"
+                      disabled={submitting}
+                      className="group relative overflow-hidden inline-flex w-full sm:w-auto items-center justify-center rounded-xl bg-white text-blue-400 border border-blue-400 px-7 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-400/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
                     >
                       <HoverFill className="bg-blue-400" />
                       <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-500 ease-in-out group-hover:text-white group-active:text-white">
                         <Send className="h-4 w-4" strokeWidth={2} />
-                        Send Message
+                        {submitting ? 'Sending…' : 'Send Message'}
                       </span>
                     </button>
                   </div>
                 </form>
-              )}
             </div>
 
             {/* Secondary: prefer WhatsApp? */}
