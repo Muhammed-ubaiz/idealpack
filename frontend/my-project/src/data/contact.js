@@ -1,12 +1,22 @@
 // Official Ideal Pack contact details — single source of truth for the
-// Contact page, Footer and the floating WhatsApp button.
+// Contact page, Footer, product pages and the floating WhatsApp button.
 const WHATSAPP_NUMBER = '971549910027'
 const WHATSAPP_MESSAGE = 'Hello Ideal Pack, I would like to know more about your products.'
+
+/**
+ * Build a wa.me link to the official Ideal Pack number with an optional
+ * pre-filled message. Use this everywhere instead of hard-coding a number.
+ */
+export const whatsappLink = (message) =>
+  message
+    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
+    : `https://wa.me/${WHATSAPP_NUMBER}`
 
 export const CONTACT = {
   phoneDisplay: '+971 6 564 2072',
   phoneHref: 'tel:+97165642072',
 
+  whatsappNumber: WHATSAPP_NUMBER,
   whatsappDisplay: '+971 54 991 0027',
   whatsappHref: `https://wa.me/${WHATSAPP_NUMBER}`,
   whatsappPrefilledHref: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`,

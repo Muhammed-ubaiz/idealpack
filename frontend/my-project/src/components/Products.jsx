@@ -1,8 +1,30 @@
 import { useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Search, ShieldCheck, BadgeCheck, Briefcase, ArrowRight } from 'lucide-react'
+import {
+  Search,
+  ShieldCheck,
+  BadgeCheck,
+  Briefcase,
+  ArrowRight,
+  ShoppingBag,
+  Layers,
+  Box,
+  FileStack,
+  PackageOpen,
+  SprayCan,
+} from 'lucide-react'
 import { categories, products } from '../data/products'
+
+// Line-style icon per category for the "Shop by Category" section.
+const categoryIcons = {
+  'kraft-packaging': ShoppingBag,
+  'foil-containers': Layers,
+  'food-containers': Box,
+  'tissues-napkins': FileStack,
+  'cling-film-bags': PackageOpen,
+  'hygiene-solutions': SprayCan,
+}
 
 // URL-safe category slugs the ?category= query param is validated against.
 const validCategoryIds = categories.map((category) => category.id)
@@ -97,12 +119,13 @@ function Products() {
         aria-hidden={isClone || undefined}
         tabIndex={isClone ? -1 : undefined}
         onClick={() => selectCategory(cat.id)}
+        aria-pressed={!isClone && isActive}
         className={`${
           isClone ? 'sm:hidden ' : ''
-        }shrink-0 whitespace-nowrap mr-2 sm:mr-0 px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+        }shrink-0 whitespace-nowrap mr-2 sm:mr-0 px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 ${
           isActive
             ? 'bg-blue-400 text-white shadow-md shadow-blue-400/30'
-            : 'bg-white text-blue-950 border border-blue-100 hover:border-blue-300'
+            : 'bg-white text-slate-900 border border-blue-400/40 hover:border-red-400 hover:text-red-600'
         }`}
       >
         {cat.label}
@@ -114,8 +137,8 @@ function Products() {
     <div className="bg-white">
       {/* 1. PRODUCT HERO */}
       <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-blue-50/30 to-white flex items-center justify-center px-4 sm:px-6 lg:px-8 py-14 min-h-[380px] sm:min-h-[420px] lg:min-h-[480px]">
-        <span className="pointer-events-none absolute -top-14 -left-14 w-56 h-56 rounded-full bg-blue-200/30 blur-3xl" />
-        <span className="pointer-events-none absolute -bottom-16 -right-8 w-64 h-64 rounded-full bg-blue-300/20 blur-3xl" />
+        <span className="pointer-events-none absolute -top-14 -left-14 w-56 h-56 rounded-full  blur-3xl" />
+        <span className="pointer-events-none absolute -bottom-16 -right-8 w-64 h-64 rounded-full  blur-3xl" />
 
         <motion.div
           variants={staggerContainer}
@@ -125,14 +148,17 @@ function Products() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Our Products
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h1
             variants={fadeUp}
-            className="mt-6 text-3xl sm:text-4xl md:text-5xl font-bold text-blue-950 tracking-tight leading-[1.15]"
+            className="mt-6 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-[1.15]"
           >
             Packaging Solutions for Every Need
           </motion.h1>
@@ -142,13 +168,13 @@ function Products() {
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8 relative max-w-[650px] mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-blue-300" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-blue-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search products..."
-              className="w-full rounded-xl bg-white border border-blue-100 shadow-md shadow-blue-950/5 pl-11 pr-4 py-3.5 text-sm text-blue-950 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
+              className="w-full rounded-xl bg-white border border-blue-100 shadow-md shadow-blue-950/5 pl-11 pr-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-400 transition-colors"
             />
           </motion.div>
         </motion.div>
@@ -178,7 +204,7 @@ function Products() {
           >
             <motion.h2
               variants={fadeUp}
-              className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
             >
               Explore Our Products
             </motion.h2>
@@ -198,7 +224,7 @@ function Products() {
                 <motion.div key={product.id} variants={fadeUp} className="h-full">
                   <Link
                     to={`/products/${product.slug}`}
-                    className="group flex flex-col h-full rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md"
+                    className="group flex flex-col h-full rounded-2xl border border-blue-400/40 bg-white shadow-sm overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:border-red-400 hover:shadow-md"
                   >
                     <div className="flex h-[150px] sm:h-64 items-center justify-center bg-white p-3 sm:p-8">
                       <img
@@ -207,14 +233,14 @@ function Products() {
                         className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
-                    <div className="flex flex-col flex-1 border-t border-slate-100 p-3 sm:p-6">
-                      <span className="text-xs sm:text-sm font-medium text-blue-500 uppercase tracking-wide">
+                    <div className="flex flex-col flex-1 border-t border-blue-100 p-3 sm:p-6">
+                      <span className="text-xs sm:text-sm font-semibold text-slate-900 uppercase tracking-wide">
                         {product.categoryLabel}
                       </span>
                       <h3 className="mt-1.5 sm:mt-2 text-sm sm:text-lg font-semibold text-slate-900 line-clamp-2 min-h-[40px] sm:min-h-0">
                         {product.name}
                       </h3>
-                      <span className="mt-auto pt-3 sm:pt-6 inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-blue-500 group-hover:text-blue-600 transition-colors">
+                      <span className="mt-auto pt-3 sm:pt-6 inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-slate-900 transition-colors">
                         View Details
                         <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </span>
@@ -225,7 +251,7 @@ function Products() {
             </motion.div>
           ) : (
             <div className="mt-16 text-center">
-              <p className="text-base sm:text-lg font-semibold text-blue-950">No products found</p>
+              <p className="text-base sm:text-lg font-semibold text-slate-900">No products found</p>
               <p className="mt-2 text-sm text-slate-500">Try changing your search or category.</p>
             </div>
           )}
@@ -233,7 +259,7 @@ function Products() {
       </section>
 
       {/* 7. FEATURED PRODUCT STRIP */}
-      <section className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 bg-blue-50/40">
+      <section className="px-4 sm:px-6 lg:px-8 py-14 sm:py-16 bg-white">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -243,14 +269,17 @@ function Products() {
           <div>
             <motion.p
               variants={fadeUp}
-              className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+              className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
             >
               Packaging Made Practical
             </motion.p>
-            <motion.span variants={fadeUp} className="mt-4 block w-14 h-px bg-blue-400" />
+            <motion.span variants={fadeUp} className="mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+              <span className="w-1/2 bg-blue-400" />
+              <span className="w-1/2 bg-red-600" />
+            </motion.span>
             <motion.h2
               variants={fadeUp}
-              className="mt-6 text-xl sm:text-2xl md:text-3xl font-bold text-blue-950 tracking-tight leading-tight"
+              className="mt-6 text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 tracking-tight leading-tight"
             >
               Reliable Solutions for Everyday Business Needs
             </motion.h2>
@@ -264,12 +293,12 @@ function Products() {
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex flex-col items-start gap-3 rounded-2xl bg-white border border-blue-100 p-5"
+                className="flex flex-col items-start gap-3 rounded-2xl bg-white border border-blue-400/40 p-5"
               >
                 <span className="flex items-center justify-center w-11 h-11 rounded-full bg-blue-50 text-blue-400">
                   <item.icon className="w-5 h-5" strokeWidth={1.8} />
                 </span>
-                <h3 className="text-sm font-bold text-blue-950">{item.title}</h3>
+                <h3 className="text-sm font-bold text-slate-900">{item.title}</h3>
                 <p className="text-xs text-slate-500 leading-snug">{item.description}</p>
               </div>
             ))}
@@ -285,9 +314,13 @@ function Products() {
           animate="show"
           className="text-center max-w-2xl mx-auto"
         >
+          <motion.span variants={fadeUp} className="mx-auto flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Shop by Category
           </motion.h2>
@@ -297,36 +330,32 @@ function Products() {
           variants={staggerContainer}
           initial="hidden"
           animate="show"
-          className="mt-10 sm:mt-12 max-w-[1280px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
+          className="mt-10 sm:mt-12 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
         >
           {categories
             .filter((c) => c.id !== 'all')
-            .map((cat) => (
-              <motion.button
-                key={cat.id}
-                type="button"
-                variants={fadeUp}
-                onClick={() => goToCategory(cat.id)}
-                className="group relative overflow-hidden rounded-2xl border border-gray-100 shadow-lg shadow-blue-950/10 hover:shadow-xl transition-all duration-300 text-left"
-              >
-                <div className="aspect-[4/3] overflow-hidden bg-white">
-                  <img
-                    src={cat.image}
-                    alt={cat.label}
-                    className="w-full h-full object-contain p-4 scale-100 group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/10 to-transparent" />
-
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                  <h3 className="text-white font-semibold text-sm sm:text-base">{cat.label}</h3>
-                  <span className="mt-2 inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-blue-300 group-hover:text-white transition-colors">
-                    Explore
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            .map((cat) => {
+              const CategoryIcon = categoryIcons[cat.id] ?? Box
+              return (
+                <motion.button
+                  key={cat.id}
+                  type="button"
+                  variants={fadeUp}
+                  onClick={() => goToCategory(cat.id)}
+                  aria-label={`Show ${cat.label} products`}
+                  className="group flex flex-col items-center text-center rounded-[22px] border border-blue-100 bg-white px-6 py-8 sm:py-10 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+                >
+                  <span className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-slate-900 transition-all duration-300 ease-out group-hover:scale-[1.08] group-hover:bg-blue-100 group-hover:text-blue-500 group-hover:shadow-lg group-hover:shadow-blue-400/40">
+                    <CategoryIcon className="h-12 w-12" strokeWidth={1.5} />
                   </span>
-                </div>
-              </motion.button>
-            ))}
+                  <h3 className="mt-5 text-base sm:text-lg font-bold text-slate-900">{cat.label}</h3>
+                  <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-900 transition-colors duration-300 ease-out group-hover:text-blue-500">
+                    Explore
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1.5" />
+                  </span>
+                </motion.button>
+              )
+            })}
         </motion.div>
       </section>
 
@@ -336,17 +365,21 @@ function Products() {
           variants={staggerContainer}
           initial="hidden"
           animate="show"
-          className="max-w-[1280px] mx-auto rounded-[24px] border border-blue-100 bg-white px-6 sm:px-10 py-14 sm:py-16 text-center"
+          className="max-w-[1280px] mx-auto rounded-[24px] border border-white bg-white px-6 sm:px-10 py-14 sm:py-16 text-center"
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-500 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Need Assistance?
           </motion.p>
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight max-w-2xl mx-auto"
+            className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight max-w-2xl mx-auto"
           >
             Need Help Choosing the Right Product?
           </motion.h2>
@@ -363,10 +396,10 @@ function Products() {
           >
             <Link
               to="/contact"
-              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold bg-white text-blue-600 border border-blue-200"
+              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold bg-white text-red-600 border border-red-600 shadow-lg shadow-red-600/25 transition-colors duration-300"
             >
-              <span className="absolute inset-0 bg-blue-500 origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100" />
-              <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+              <span className="absolute inset-0 bg-red-600 origin-left scale-x-0 transition-transform duration-700 ease-in-out group-hover:scale-x-100 group-active:scale-x-100" />
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-white group-active:text-white">
                 Contact Us
               </span>
             </Link>
@@ -374,9 +407,9 @@ function Products() {
               href="https://idealpackstore.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold bg-white text-blue-600 border border-blue-200"
+              className="group relative overflow-hidden w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-semibold bg-white text-blue-500 border border-blue-400"
             >
-              <span className="absolute inset-0 bg-blue-500 origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100" />
+              <span className="absolute inset-0 bg-blue-400 origin-left scale-x-0 transition-transform duration-700 ease-in-out group-hover:scale-x-100 group-active:scale-x-100" />
               <span className="relative z-10 inline-flex items-center gap-1.5 transition-colors duration-300 group-hover:text-white">
                 Visit Online Store
                 <span className="transition-transform duration-300 group-hover:translate-x-1">&#8599;</span>

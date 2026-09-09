@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Eye, Rocket, Shield, Heart, ChevronRight } from 'lucide-react'
 
@@ -248,7 +249,7 @@ const PTR_LEFT = ['28%', '50%', '50%', '72%']
 
 function FocusCard({ item, activeKey, pointerLeft }) {
   return (
-    <div className="relative rounded-2xl border border-blue-100 bg-white p-6 sm:p-7 shadow-sm shadow-blue-950/5">
+    <div className="relative rounded-2xl border border-blue-400/40 border-t-4 border-t-red-600 bg-white p-6 sm:p-7 shadow-sm shadow-blue-950/5">
       <span
         className="pointer-events-none absolute -top-2 h-4 w-4 rotate-45 rounded-[3px] border-l border-t border-blue-100 bg-white"
         style={{ left: pointerLeft, marginLeft: '-8px' }}
@@ -299,9 +300,8 @@ function AboutUs() {
   return (
     <div className="bg-white">
       {/* SECTION 1 — ABOUT HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-blue-50/30 to-white flex items-center justify-center px-4 sm:px-6 py-14 min-h-[360px] sm:min-h-[400px] lg:min-h-[440px]">
-        <span className="pointer-events-none absolute -top-14 -left-14 w-56 h-56 rounded-full bg-blue-200/30 blur-3xl" />
-        <span className="pointer-events-none absolute -bottom-16 -right-8 w-64 h-64 rounded-full bg-blue-300/20 blur-3xl" />
+<section className="relative overflow-hidden bg-gradient-to-b from-gray-50 via-gray-50/30 to-white flex items-center justify-center px-4 sm:px-6 py-14 min-h-[360px] sm:min-h-[400px] lg:min-h-[440px]">        <span className="pointer-events-none absolute -top-14 -left-14 w-56 h-56 rounded-full bg-blue-200/30 blur-3xl" />
+        <span className="pointer-events-none absolute -bottom-16 -right-8 w-64 h-64 rounded-full  blur-3xl" />
 
         <motion.div
           variants={staggerContainer}
@@ -312,14 +312,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             About Us
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h1
             variants={fadeUp}
-            className="mt-6 text-3xl sm:text-4xl md:text-5xl font-bold text-blue-950 tracking-tight leading-[1.15]"
+            className="mt-6 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-[1.15]"
           >
             Packaging Solutions Built Around Your Business
           </motion.h1>
@@ -343,14 +346,17 @@ function AboutUs() {
           <div>
             <motion.p
               variants={fadeUp}
-              className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+              className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
             >
               Our Story
             </motion.p>
-            <motion.span variants={fadeUp} className="mt-4 block w-14 h-px bg-blue-400" />
+            <motion.span variants={fadeUp} className="mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+              <span className="w-1/2 bg-blue-400" />
+              <span className="w-1/2 bg-red-600" />
+            </motion.span>
             <motion.h2
               variants={fadeUp}
-              className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight leading-tight"
+              className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight"
             >
               Built on Quality. Driven by Reliability.
             </motion.h2>
@@ -370,12 +376,12 @@ function AboutUs() {
                     onClick={() => setActiveStory(isOpen ? null : index)}
                     className="w-full flex items-center gap-4 py-4 text-left"
                   >
-                    <span className="text-2xl sm:text-3xl font-bold text-blue-400">{step.number}</span>
-                    <span className="w-4 h-0.5 bg-blue-400 shrink-0" />
-                    <span className="flex-1 text-sm sm:text-base font-semibold text-blue-950">
+                    <span className="text-2xl sm:text-3xl font-bold text-red-600">{step.number}</span>
+                    <span className="w-6 h-1 rounded-full bg-red-600 shrink-0" />
+                    <span className="flex-1 text-sm sm:text-base font-semibold text-slate-900">
                       {step.title}
                     </span>
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full border border-blue-200 text-blue-400 text-sm shrink-0">
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-red-600 text-red-600 text-sm shrink-0">
                       {isOpen ? '−' : '+'}
                     </span>
                   </button>
@@ -406,14 +412,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Our Strength
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Our Strength Today
           </motion.h2>
@@ -437,12 +446,12 @@ function AboutUs() {
                   delay: index * 0.4,
                 }}
               >
-                <div className="group flex flex-col items-center justify-center text-center gap-2 w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[270px] lg:h-[270px] rounded-full mx-auto bg-gradient-to-br from-white to-blue-50/70 border border-blue-200 shadow-lg shadow-blue-400/10 hover:scale-103 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-400/30 transition-all duration-300">
-                  <span className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-blue-50 text-blue-400 shrink-0">
+                <div className="group flex flex-col items-center justify-center text-center gap-2 w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[270px] lg:h-[270px] rounded-full mx-auto bg-white border border-blue-100 shadow-lg shadow-blue-950/15 hover:scale-103 hover:border-red-400 hover:shadow-xl hover:shadow-blue-950/25 transition-all duration-300">
+                  <span className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-red-50 text-red-600 shrink-0">
                     <Icon className="w-6 h-6 sm:w-7 sm:h-7">{stat.icon}</Icon>
                   </span>
                   <div className="mt-1 px-6">
-                    <p className="text-lg sm:text-xl font-bold text-blue-950 leading-tight">
+                    <p className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
                       {stat.target != null ? (
                         <Counter target={stat.target} suffix={stat.suffix} start={statsInView} />
                       ) : (
@@ -474,14 +483,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Who We Serve
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Industries We Serve
           </motion.h2>
@@ -504,29 +516,39 @@ function AboutUs() {
               <motion.div
                 key={ind.label}
                 variants={fadeUp}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isOpen}
+                aria-label={`${ind.label} — show details`}
                 onClick={() => setOpenIndustry(isOpen ? null : index)}
-                className={`group relative self-start cursor-pointer rounded-[18px] border px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm transition-all duration-300 md:cursor-default md:bg-white md:border-blue-100 md:shadow-sm md:hover:z-20 md:hover:bg-gradient-to-br md:hover:from-blue-50 md:hover:to-blue-100/70 md:hover:border-blue-200 md:hover:shadow-lg md:hover:shadow-blue-400/20 ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setOpenIndustry(isOpen ? null : index)
+                  }
+                }}
+                className={`group relative self-start cursor-pointer rounded-[18px] border px-4 py-3.5 sm:px-5 sm:py-4 shadow-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 md:cursor-default md:bg-white md:border-blue-400/40 md:shadow-sm md:hover:z-20 md:hover:bg-gradient-to-br md:hover:from-red-50 md:hover:to-red-100/60 md:hover:border-red-400 md:hover:shadow-lg md:hover:shadow-red-600/15 ${
                   isOpen
-                    ? 'bg-gradient-to-br from-blue-50 to-blue-100/70 border-blue-200 shadow-lg shadow-blue-400/20'
-                    : 'bg-white border-blue-100'
+                    ? 'bg-gradient-to-br from-red-50 to-red-100/60 border-red-400 shadow-lg shadow-red-600/15'
+                    : 'bg-white border-blue-400/40'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-colors duration-300 md:bg-blue-50 md:text-blue-400 md:group-hover:bg-blue-400 md:group-hover:text-white ${
-                      isOpen ? 'bg-blue-400 text-white' : 'bg-blue-50 text-blue-400'
+                    className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-colors duration-300 md:bg-blue-50 md:text-blue-400 md:group-hover:bg-red-600 md:group-hover:text-white ${
+                      isOpen ? 'bg-red-600 text-white' : 'bg-blue-50 text-blue-400'
                     }`}
                   >
                     <Icon className="w-5 h-5">{ind.icon}</Icon>
                   </span>
-                  <span className="flex-1 text-sm sm:text-base font-semibold text-blue-950 transition-transform duration-300 md:group-hover:-translate-y-0.5">
+                  <span className="flex-1 text-sm sm:text-base font-semibold text-slate-900 transition-transform duration-300 md:group-hover:-translate-y-0.5">
                     {ind.label}
                   </span>
-                  <span className="hidden md:inline-flex text-blue-300 group-hover:text-blue-400 shrink-0 transition-all duration-300 group-hover:translate-x-1">
+                  <span className="hidden md:inline-flex text-red-400 group-hover:text-red-600 shrink-0 transition-all duration-300 group-hover:translate-x-1">
                     &rarr;
                   </span>
                   <span
-                    className={`md:hidden flex items-center justify-center text-blue-400 shrink-0 transition-transform duration-300 ${
+                    className={`md:hidden flex items-center justify-center text-red-600 shrink-0 transition-transform duration-300 ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   >
@@ -561,14 +583,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Our Foundation
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             What Drives Ideal Pack
           </motion.h2>
@@ -594,20 +619,21 @@ function AboutUs() {
                     onMouseEnter={() => setActiveFocus(index)}
                     onFocus={() => setActiveFocus(index)}
                     onClick={() => setActiveFocus(index)}
-                    className="flex w-32 shrink-0 flex-col items-center gap-2 text-center outline-none"
+                    aria-pressed={active}
+                    className="flex w-32 shrink-0 flex-col items-center gap-2 rounded-xl text-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
                   >
                     <span
                       className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 ${
                         active
-                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                          : 'border border-blue-200 bg-blue-50 text-blue-500'
+                          ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                          : 'border-2 border-blue-400/50 bg-white text-blue-400'
                       }`}
                     >
                       <StepIcon className="h-5 w-5" strokeWidth={1.9} />
                     </span>
                     <span
                       className={`text-xs font-bold tracking-wide transition-colors duration-300 ${
-                        active ? 'text-blue-600' : 'text-blue-300'
+                        active ? 'text-red-600' : 'text-slate-400'
                       }`}
                     >
                       {step.number}
@@ -623,8 +649,8 @@ function AboutUs() {
 
                   {index < focusAreas.length - 1 && (
                     <div className="flex flex-1 items-center px-2 pt-6">
-                      <span className="h-px flex-1 bg-blue-200" />
-                      <ChevronRight className="-ml-1 h-4 w-4 text-blue-300" strokeWidth={2.2} />
+                      <span className="h-px flex-1 bg-blue-400/40" />
+                      <ChevronRight className="-ml-1 h-4 w-4 text-blue-400" strokeWidth={2.2} />
                     </div>
                   )}
                 </Fragment>
@@ -657,15 +683,15 @@ function AboutUs() {
                 <button
                   type="button"
                   onClick={() => setActiveFocus(index)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all duration-300 ${
-                    active ? 'border-blue-200 bg-blue-50/50' : 'border-slate-200 bg-white'
+                  className={`flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all duration-300 ${
+                    active ? 'border-red-400 bg-red-50/60' : 'border-blue-400/40 bg-white'
                   }`}
                 >
                   <span
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
                       active
-                        ? 'bg-blue-500 text-white shadow-md shadow-blue-500/30'
-                        : 'border border-blue-200 bg-blue-50 text-blue-500'
+                        ? 'bg-red-600 text-white shadow-md shadow-red-600/30'
+                        : 'border-2 border-blue-400/50 bg-white text-blue-400'
                     }`}
                   >
                     <StepIcon className="h-5 w-5" strokeWidth={1.9} />
@@ -673,7 +699,7 @@ function AboutUs() {
                   <span className="flex flex-col">
                     <span
                       className={`text-[11px] font-bold tracking-wide ${
-                        active ? 'text-blue-600' : 'text-blue-300'
+                        active ? 'text-red-600' : 'text-slate-400'
                       }`}
                     >
                       {step.number}
@@ -710,14 +736,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Testimonials
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             What Our Clients Say
           </motion.h2>
@@ -734,14 +763,14 @@ function AboutUs() {
             <motion.div
               key={t.name + t.role}
               variants={fadeUp}
-              className="flex flex-col rounded-[24px] bg-white border border-blue-100 shadow-md shadow-blue-950/5 p-6 sm:p-7"
+              className="flex flex-col rounded-[24px] bg-white border border-blue-400/40 border-t-4 border-t-red-600 shadow-md shadow-blue-950/5 p-6 sm:p-7"
             >
-              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-50 text-blue-400 text-lg font-serif shrink-0">
+              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-red-50 text-red-600 text-lg font-serif shrink-0">
                 &ldquo;
               </span>
               <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">{t.quote}</p>
               <div className="mt-5 pt-4 border-t border-blue-100">
-                <p className="text-sm font-semibold text-blue-950">{t.name}</p>
+                <p className="text-sm font-semibold text-slate-900">{t.name}</p>
                 <p className="text-xs text-slate-500">{t.role}</p>
               </div>
             </motion.div>
@@ -751,9 +780,6 @@ function AboutUs() {
 
       {/* SECTION 7 — BUSINESS CTA */}
       <section className="relative overflow-hidden px-4 sm:px-6 md:px-16 py-16 sm:py-20 bg-white">
-        <span className="pointer-events-none absolute -top-20 -right-16 w-72 h-72 rounded-full bg-blue-100 blur-3xl" />
-        <span className="pointer-events-none absolute -bottom-24 -left-16 w-80 h-80 rounded-full bg-blue-50 blur-3xl" />
-
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -763,13 +789,17 @@ function AboutUs() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Let&apos;s Work Together
           </motion.p>
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Packaging Solutions for Every Business
           </motion.h2>
@@ -781,20 +811,20 @@ function AboutUs() {
             variants={fadeUp}
             className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
           >
-            <a
-              href="#"
-              className="group relative overflow-hidden w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-blue-950 bg-white border border-blue-950/15 hover:-translate-y-0.5 hover:text-white transition-all duration-300"
+            <Link
+              to="/products"
+              className="group relative overflow-hidden inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-red-600 bg-white border border-red-600 shadow-lg shadow-red-600/25 hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
             >
-              <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
-              <span className="relative z-10">Explore Products</span>
-            </a>
-            <a
-              href="#"
-              className="group relative overflow-hidden w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-blue-950 bg-white border border-blue-950/15 hover:-translate-y-0.5 hover:text-white transition-all duration-300"
+              <span className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-white group-active:text-white">Explore Products</span>
+            </Link>
+            <Link
+              to="/contact"
+              className="group relative overflow-hidden inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-blue-500 bg-white border border-blue-400 hover:-translate-y-0.5 hover:text-white transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
             >
-              <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
+              <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
               <span className="relative z-10">Contact Us</span>
-            </a>
+            </Link>
           </motion.div>
         </motion.div>
       </section>

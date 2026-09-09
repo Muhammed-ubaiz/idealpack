@@ -1,13 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { products } from '../data/products'
-import { CONTACT } from '../data/contact'
-
-/**
- * WhatsApp business number in international format — digits only,
- * no "+", spaces or dashes. Update this to the real store number.
- */
-const WHATSAPP_NUMBER = '910000000000'
+import { CONTACT, whatsappLink } from '../data/contact'
+import HoverFill from './HoverFill'
 
 /**
  * ProductDetails
@@ -112,7 +107,7 @@ function ProductDetails({ product: productProp }) {
         </p>
         <Link
           to="/products"
-          className="mt-6 inline-block text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+          className="mt-6 inline-block text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
         >
           &larr; Back to Products
         </Link>
@@ -124,12 +119,13 @@ function ProductDetails({ product: productProp }) {
     .filter(Boolean)
     .join('  /  ')
 
-  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `Hi, I'm interested in "${product.name}". Could you share more details?`,
-  )}`
+  // WhatsApp enquiry to the official Ideal Pack number, product name pre-filled.
+  const whatsappHref = whatsappLink(
+    `Hi, I would like to enquire about ${product.name}.`,
+  )
 
-  // Per-product Ideal Pack online store link (falls back to storeUrl).
-  const shopUrl = product.shopUrl || product.storeUrl
+  // Per-product Ideal Pack online store link (falls back to storeUrl, then the store home).
+  const shopUrl = product.shopUrl || product.storeUrl || 'https://idealpackstore.com/'
 
   // "Enquire Now" opens a sales email pre-filled with the product name.
   const enquiryHref = `${CONTACT.emailSalesHref}?subject=${encodeURIComponent(
@@ -160,7 +156,7 @@ function ProductDetails({ product: productProp }) {
           {/* LEFT — image gallery */}
           <div className="lg:sticky lg:top-24">
             {/* Main image — Amazon-style mouse-position zoom on desktop */}
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-2xl border border-blue-400/40 bg-white shadow-sm">
               <div className="relative flex aspect-square items-center justify-center p-6 sm:p-10">
                 <img
                   src={mainSrc}
@@ -196,10 +192,10 @@ function ProductDetails({ product: productProp }) {
                     onClick={() => setActiveImage(index)}
                     aria-label={`Show product image ${index + 1}`}
                     aria-current={activeImage === index}
-                    className={`flex aspect-square items-center justify-center rounded-xl border bg-white p-1.5 transition-all duration-200 hover:border-blue-400 sm:p-2 ${
+                    className={`flex aspect-square items-center justify-center rounded-xl border-2 bg-white p-1.5 transition-all duration-200 hover:border-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400 sm:p-2 ${
                       activeImage === index
-                        ? 'border-blue-500 ring-2 ring-blue-500/20'
-                        : 'border-slate-200 hover:bg-blue-50/40'
+                        ? 'border-red-600 ring-2 ring-red-600/20'
+                        : 'border-blue-400/40 hover:bg-blue-50/40'
                     }`}
                   >
                     <img src={img} alt="" className="max-h-full max-w-full object-contain" />
@@ -212,7 +208,8 @@ function ProductDetails({ product: productProp }) {
           {/* RIGHT — product info */}
           <div className="lg:pt-2">
             {categoryText && (
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-500 sm:text-sm">
+              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-red-600 sm:text-sm">
+                <span className="h-3.5 w-1 rounded-full bg-red-600" />
                 {categoryText}
               </p>
             )}
@@ -229,29 +226,38 @@ function ProductDetails({ product: productProp }) {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
                 href={enquiryHref}
-                className="inline-flex w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-700 sm:w-auto"
+                className="group relative overflow-hidden inline-flex w-full items-center justify-center rounded-xl bg-white text-red-600 border border-red-600 px-6 py-3 text-sm font-semibold shadow-lg shadow-red-600/25 transition-all duration-300 hover:-translate-y-0.5 sm:w-auto"
               >
-                Enquire Now
+                <HoverFill className="bg-red-600" />
+                <span className="relative z-10 transition-colors duration-500 ease-in-out group-hover:text-white group-active:text-white">
+                  Enquire Now
+                </span>
               </a>
 
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1ebe5b] sm:w-auto"
+                className="group relative overflow-hidden inline-flex w-full items-center justify-center rounded-xl bg-[#25D366] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 sm:w-auto"
               >
-                <WhatsAppIcon className="w-4.5 h-4.5" />
-                WhatsApp
+                <HoverFill className="bg-[#1ebe5b]" />
+                <span className="relative z-10 inline-flex items-center gap-2">
+                  <WhatsAppIcon className="w-4.5 h-4.5" />
+                  WhatsApp
+                </span>
               </a>
 
               <a
                 href={shopUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 sm:w-auto"
+                className="group relative overflow-hidden inline-flex w-full items-center justify-center rounded-xl border border-blue-400 bg-white px-6 py-3 text-sm font-semibold text-blue-500 transition-all duration-200 hover:-translate-y-0.5 sm:w-auto"
               >
-                <ShoppingBagIcon className="w-4.5 h-4.5" />
-                Shop Now
+                <HoverFill className="bg-blue-400" />
+                <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-500 ease-in-out group-hover:text-white group-active:text-white">
+                  <ShoppingBagIcon className="w-4.5 h-4.5" />
+                  Shop Now
+                </span>
               </a>
             </div>
           </div>

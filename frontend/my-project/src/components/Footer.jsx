@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Phone, MessageCircle, Mail, MapPin } from 'lucide-react'
 import logo from '../assets/ChatGPT Image Sep 2, 2026, 10_50_55 AM.png'
 import { CONTACT } from '../data/contact'
+import HoverFill from './HoverFill'
 
 /** Small inline-SVG icon wrapper for the social brand marks. */
 function BrandIcon({ children, className = 'w-4 h-4' }) {
@@ -57,18 +58,24 @@ const socials = [
 ]
 
 const underline =
-  'relative inline-block group transition-colors hover:text-blue-950'
+  'relative inline-block group transition-colors text-blue-100/80 hover:text-white'
 const underlineBar =
-  'absolute left-0 -bottom-1 h-0.5 w-full bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300'
+  'absolute left-0 -bottom-1 h-0.5 w-full bg-red-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300'
 
 function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-white to-blue-50 text-blue-950 font-sans">
+    <footer className="bg-blue-950 border-t-4 border-blue-400 text-blue-100 font-sans">
       <div className="px-4 sm:px-6 md:px-16 py-12 sm:py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
         {/* Company info */}
         <div>
-          <img src={logo} alt="Ideal Pack" className="h-10 w-auto" />
-          <p className="mt-4 text-sm text-blue-950/80 leading-relaxed max-w-70">
+          <Link
+            to="/"
+            aria-label="Ideal Pack — go to home"
+            className="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+          >
+            <img src={logo} alt="Ideal Pack" className="h-9 w-auto" />
+          </Link>
+          <p className="mt-4 text-sm text-blue-100/70 leading-relaxed max-w-70">
             Premium packaging, eco-friendly and hygiene solutions — all in one place.
           </p>
           <div className="mt-5 flex items-center gap-3">
@@ -79,7 +86,7 @@ function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:scale-105 transition-all duration-300"
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-white/15 text-blue-400 hover:bg-red-600 hover:text-white hover:border-red-600 hover:scale-105 transition-all duration-300"
               >
                 <BrandIcon className="w-4 h-4">{icon}</BrandIcon>
               </a>
@@ -88,23 +95,29 @@ function Footer() {
 
           {/* WhatsApp CTA */}
           <div className="mt-6">
-            <p className="text-sm font-medium text-blue-950">Need help choosing a product?</p>
+            <p className="text-sm font-medium text-white">Need help choosing a product?</p>
             <a
               href={CONTACT.whatsappPrefilledHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1ebe5b]"
+              className="group relative overflow-hidden mt-3 inline-flex items-center rounded-xl bg-[#25D366] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5"
             >
-              <MessageCircle className="w-4 h-4" strokeWidth={2} />
-              Chat on WhatsApp
+              <HoverFill className="bg-[#1ebe5b]" />
+              <span className="relative z-10 inline-flex items-center gap-2">
+                <MessageCircle className="w-4 h-4" strokeWidth={2} />
+                Chat on WhatsApp
+              </span>
             </a>
           </div>
         </div>
 
         {/* Quick links */}
         <div>
-          <h3 className="text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">Quick Links</h3>
-          <ul className="mt-4 space-y-3 text-sm text-blue-950/80">
+          <h3 className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">
+            <span className="h-4 w-1 rounded-full bg-red-600" />
+            Quick Links
+          </h3>
+          <ul className="mt-4 space-y-3 text-sm text-blue-100/80">
             {quickLinks.map(({ label, to }) => (
               <li key={label}>
                 <Link to={to} className={underline}>
@@ -118,8 +131,11 @@ function Footer() {
 
         {/* Product links */}
         <div>
-          <h3 className="text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">Products</h3>
-          <ul className="mt-4 space-y-3 text-sm text-blue-950/80">
+          <h3 className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">
+            <span className="h-4 w-1 rounded-full bg-red-600" />
+            Products
+          </h3>
+          <ul className="mt-4 space-y-3 text-sm text-blue-100/80">
             {productLinks.map((label) => (
               <li key={label}>
                 <Link to="/products" className={underline}>
@@ -133,11 +149,14 @@ function Footer() {
 
         {/* Contact us */}
         <div>
-          <h3 className="text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">Contact Us</h3>
-          <ul className="mt-4 space-y-3 text-sm text-blue-950/80">
+          <h3 className="inline-flex items-center gap-2 text-sm font-semibold tracking-[0.15em] uppercase text-blue-400">
+            <span className="h-4 w-1 rounded-full bg-red-600" />
+            Contact Us
+          </h3>
+          <ul className="mt-4 space-y-3 text-sm text-blue-100/80">
             <li className="flex items-center gap-2.5">
               <Phone className="w-4 h-4 shrink-0 text-blue-400" strokeWidth={1.8} />
-              <a href={CONTACT.phoneHref} className="hover:text-blue-950 transition-colors">
+              <a href={CONTACT.phoneHref} className="hover:text-white transition-colors">
                 {CONTACT.phoneDisplay}
               </a>
             </li>
@@ -147,21 +166,21 @@ function Footer() {
                 href={CONTACT.whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-950 transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {CONTACT.whatsappDisplay}
               </a>
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="w-4 h-4 shrink-0 text-blue-400" strokeWidth={1.8} />
-              <a href={CONTACT.emailInfoHref} className="hover:text-blue-950 transition-colors">
+              <a href={CONTACT.emailInfoHref} className="hover:text-white transition-colors">
                 {CONTACT.emailInfo}
               </a>
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="w-4 h-4 shrink-0 text-blue-400" strokeWidth={1.8} />
-              <a href={CONTACT.emailSalesHref} className="hover:text-blue-950 transition-colors">
-                <span className="text-blue-950/50">Sales:</span> {CONTACT.emailSales}
+              <a href={CONTACT.emailSalesHref} className="hover:text-white transition-colors">
+                <span className="text-blue-100/50">Sales:</span> {CONTACT.emailSales}
               </a>
             </li>
             <li className="flex items-start gap-2.5">
@@ -170,7 +189,7 @@ function Footer() {
                 href={CONTACT.mapHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-blue-950 transition-colors"
+                className="hover:text-white transition-colors"
               >
                 {CONTACT.locationLine1}
                 <br />
@@ -181,17 +200,17 @@ function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-blue-100 px-4 sm:px-6 md:px-16 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-950/60">
+      <div className="border-t border-white/10 px-4 sm:px-6 md:px-16 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-100/60">
         <span>&copy; {new Date().getFullYear()} Ideal Pack. All rights reserved.</span>
         <div className="flex items-center gap-5">
-          <a href="#" className={underline}>
+          <Link to="/privacy-policy" className={underline}>
             Privacy Policy
             <span className={underlineBar} />
-          </a>
-          <a href="#" className={underline}>
+          </Link>
+          <Link to="/terms" className={underline}>
             Terms of Service
             <span className={underlineBar} />
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

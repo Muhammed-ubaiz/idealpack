@@ -6,7 +6,6 @@ import {
   Utensils,
   Truck,
   Leaf,
-  PencilRuler,
   Boxes,
   SprayCan,
   Coffee,
@@ -20,6 +19,8 @@ import {
   LayoutGrid,
   Warehouse,
   Headset,
+  Package,
+  MessageCircle,
 } from 'lucide-react'
 import customImage from '../assets/ChatGPT Image Sep 4, 2026, 11_57_57 AM.png'
 import FillButton from './FillButton'
@@ -28,46 +29,88 @@ const SHOP_URL = 'https://idealpackstore.com/'
 
 const mainServices = [
   {
-    no: '01',
-    icon: Utensils,
-    title: 'Food Packaging Solutions',
+    number: '01',
+    icon: Package,
+    title: 'Packaging Products Supply',
     description:
-      'Practical packaging solutions for restaurants, cafés, cloud kitchens, catering companies and takeaway businesses.',
+      'Access a complete range of food containers, kraft packaging, foil containers, takeaway packaging, disposable products, cups, bags, wraps, and other everyday packaging essentials for commercial use.',
+    points: [
+      'Food & takeaway packaging',
+      'Kraft & paper products',
+      'Foil & disposable containers',
+      'Cups, bags and wrapping materials',
+    ],
+    link: '/products',
   },
   {
-    no: '02',
-    icon: Truck,
-    title: 'Takeaway & Delivery Packaging',
+    number: '02',
+    icon: SprayCan,
+    title: 'Hygiene & Cleaning Solutions',
     description:
-      'Reliable packaging products designed to keep food protected, presentable and convenient during takeaway and delivery.',
+      'Keep your workplace clean, safe, and professional with reliable hygiene products designed for restaurants, hotels, offices, retail spaces, and other commercial environments.',
+    points: [
+      'Tissues & paper products',
+      'Cleaning supplies',
+      'Hand hygiene products',
+      'Commercial hygiene essentials',
+    ],
+    link: '/products',
   },
   {
-    no: '03',
-    icon: Leaf,
-    title: 'Kraft Packaging Solutions',
-    description:
-      'A range of kraft paper packaging options for businesses looking for practical and environmentally conscious packaging choices.',
-  },
-  {
-    no: '04',
-    icon: PencilRuler,
+    number: '03',
+    icon: Boxes,
     title: 'Custom Packaging Solutions',
     description:
-      'Packaging solutions tailored to specific business requirements, product sizes, applications and branding needs.',
+      'Create packaging that better fits your products and business requirements with customized packaging options, product selection support, and branding-focused solutions.',
+    points: [
+      'Custom sizes and requirements',
+      'Packaging consultation',
+      'Branding support',
+      'Business-specific solutions',
+    ],
+    link: '/contact',
   },
   {
-    no: '05',
-    icon: Boxes,
-    title: 'Bulk Supply',
+    number: '04',
+    icon: Warehouse,
+    title: 'Bulk & Wholesale Supply',
     description:
-      'Reliable bulk packaging supply for restaurants, retailers, hospitality businesses and other commercial operations.',
+      'Get dependable bulk and wholesale supply for businesses that require consistent stock, larger quantities, and competitive commercial purchasing options.',
+    points: [
+      'Bulk quantity support',
+      'Wholesale orders',
+      'Regular business supply',
+      'Scalable product availability',
+    ],
+    link: '/contact',
   },
   {
-    no: '06',
-    icon: SprayCan,
-    title: 'Hygiene & Disposable Solutions',
+    number: '05',
+    icon: Truck,
+    title: 'Delivery & Order Support',
     description:
-      'Essential disposable and hygiene products that help businesses maintain clean and efficient day-to-day operations.',
+      'We make business purchasing easier with organized order handling, responsive support, and efficient delivery coordination for your packaging and hygiene requirements.',
+    points: [
+      'Fast order processing',
+      'Delivery coordination',
+      'Repeat order support',
+      'Business account assistance',
+    ],
+    link: '/contact',
+  },
+  {
+    number: '06',
+    icon: Headset,
+    title: 'Product Consultation & Support',
+    description:
+      'Not sure which product is right for your business? Our team can guide you through product options and help you select suitable packaging and hygiene solutions.',
+    points: [
+      'Product selection guidance',
+      'Requirement-based recommendations',
+      'Business consultation',
+      'After-sales assistance',
+    ],
+    link: '/contact',
   },
 ]
 
@@ -119,10 +162,13 @@ function Services() {
       {/* 1. HERO */}
       <section className="bg-gradient-to-b from-blue-50 via-blue-50/40 to-white px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="max-w-3xl mx-auto text-center">
-          <p className="text-blue-500 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
+          <p className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
             Our Services
           </p>
-          <span className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <span className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </span>
           <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-[1.15]">
             Packaging Solutions Built for Your Business
           </h1>
@@ -131,7 +177,7 @@ function Services() {
             practical, high-quality packaging products for their everyday operational needs.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <FillButton to="/products">
+            <FillButton to="/products" variant="cta">
               Explore Products
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </FillButton>
@@ -140,54 +186,70 @@ function Services() {
         </div>
       </section>
 
-      {/* 2. INTRODUCTION */}
+      {/* 2. SERVICES GRID */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-blue-500 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
-            What We Offer
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
+            Our Services
           </p>
+          <span className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </span>
           <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-            Complete Packaging Solutions Under One Roof
+            Reliable Packaging &amp; Hygiene Solutions for Every Business
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
-            We support businesses with dependable packaging products and tailored solutions designed
-            for food service, retail, hospitality, catering and other commercial requirements.
+            From everyday packaging supplies to customized business solutions, we support
+            restaurants, hotels, catering companies, retailers, offices, and commercial businesses
+            with dependable products, expert guidance, and efficient service.
+          </p>
+          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            Whether you need bulk quantities, specialized packaging, or ongoing supply support, our
+            team helps you choose the right solutions for your operational needs.
           </p>
         </div>
-      </section>
 
-      {/* 3. MAIN SERVICES GRID */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-16 sm:pb-20">
-        <div className="max-w-[1280px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {mainServices.map(({ no, icon: Ico, title, description }) => (
+        <div className="mt-10 sm:mt-12 max-w-[1280px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {mainServices.map(({ icon: Ico, number, title, description, points, link }) => (
             <div
-              key={no}
-              className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+              key={number}
+              className="group flex h-full flex-col rounded-[22px] border border-blue-100 bg-white p-6 sm:p-7 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-lg"
             >
               <div className="flex items-center justify-between">
-                <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-500 transition-colors duration-300 group-hover:bg-blue-500 group-hover:text-white">
-                  <Ico className="w-6 h-6" strokeWidth={1.8} />
+                <span className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 transition-transform duration-300 ease-out group-hover:scale-105">
+                  <Ico className="w-5 h-5" strokeWidth={1.75} />
                 </span>
-                <span className="text-sm font-semibold text-slate-300">{no}</span>
+                <span className="text-sm font-bold tracking-[0.2em] text-blue-400">{number}</span>
               </div>
               <h3 className="mt-5 text-lg font-semibold text-slate-900">{title}</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed flex-1">{description}</p>
+              <p className="mt-2 text-sm text-slate-600 leading-relaxed">{description}</p>
+              <ul className="mt-4 flex flex-col gap-2">
+                {points.map((point) => (
+                  <li key={point} className="flex items-start gap-2 text-sm text-slate-700">
+                    <Check className="mt-0.5 w-4 h-4 shrink-0 text-blue-500" strokeWidth={2.5} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
               <Link
-                to="/products"
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                to={link}
+                className="mt-auto pt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 transition-colors duration-300 hover:text-blue-700"
               >
                 Learn More
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
               </Link>
             </div>
           ))}
         </div>
+
+        
       </section>
 
-      {/* 4. CUSTOM PACKAGING */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white border-y border-blue-100">
+      {/* 3. CUSTOM PACKAGING */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm aspect-[4/3]">
+          <div className="overflow-hidden rounded-2xl border border-blue-400/40 shadow-sm aspect-[4/3]">
             <img
               src={customImage}
               alt="Ideal Pack packaging solutions"
@@ -195,10 +257,14 @@ function Services() {
             />
           </div>
           <div>
-            <p className="text-blue-500 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
+            <p className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
               Custom Solutions
             </p>
-            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+            <span className="mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+              <span className="w-1/2 bg-blue-400" />
+              <span className="w-1/2 bg-red-600" />
+            </span>
+            <h2 className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
               Packaging Tailored to Your Business
             </h2>
             <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
@@ -208,7 +274,7 @@ function Services() {
             <ul className="mt-6 flex flex-col gap-3">
               {customPoints.map((point) => (
                 <li key={point} className="flex items-center gap-3 text-sm text-slate-700">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-50 text-blue-500 shrink-0">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-red-600 text-white shrink-0">
                     <Check className="w-3.5 h-3.5" strokeWidth={2.5} />
                   </span>
                   {point}
@@ -216,20 +282,24 @@ function Services() {
               ))}
             </ul>
             <div className="mt-8">
-              <FillButton to="/contact">Enquire About Custom Packaging</FillButton>
+              <FillButton to="/contact" variant="cta">Enquire About Custom Packaging</FillButton>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. INDUSTRIES WE SERVE */}
+      {/* 4. INDUSTRIES WE SERVE */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <div className="max-w-[1280px] mx-auto">
           <div className="max-w-2xl mx-auto text-center">
-            <p className="text-blue-500 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
+            <p className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase">
               Industries
             </p>
-            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+            <span className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+              <span className="w-1/2 bg-blue-400" />
+              <span className="w-1/2 bg-red-600" />
+            </span>
+            <h2 className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
               Solutions for Different Business Needs
             </h2>
           </div>
@@ -237,9 +307,9 @@ function Services() {
             {industries.map(({ icon: Ico, label }) => (
               <div
                 key={label}
-                className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-sm"
+                className="flex flex-col items-center gap-3 rounded-xl border border-blue-400/40 bg-white p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-red-400 hover:shadow-sm"
               >
-                <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-blue-50 text-blue-500">
+                <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-blue-50 text-blue-400">
                   <Ico className="w-5 h-5" strokeWidth={1.8} />
                 </span>
                 <span className="text-sm font-medium text-slate-900">{label}</span>
@@ -249,19 +319,23 @@ function Services() {
         </div>
       </section>
 
-      {/* 6. WHY CHOOSE US */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white border-y border-blue-100">
+      {/* 5. WHY CHOOSE US */}
+      <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight text-center">
+          <span className="mx-auto flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </span>
+          <h2 className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight text-center">
             Why Choose Ideal Pack?
           </h2>
           <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {whyChooseUs.map(({ icon: Ico, title, description }) => (
               <div
                 key={title}
-                className="rounded-2xl border border-slate-200 bg-white p-6 transition-colors duration-300 hover:border-blue-200"
+                className="rounded-2xl border border-blue-400/40 bg-white p-6 transition-colors duration-300 hover:border-red-400"
               >
-                <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-500">
+                <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-blue-50 text-blue-400">
                   <Ico className="w-6 h-6" strokeWidth={1.8} />
                 </span>
                 <h3 className="mt-4 text-base font-semibold text-slate-900">{title}</h3>
@@ -272,10 +346,14 @@ function Services() {
         </div>
       </section>
 
-      {/* 7. FINAL CTA */}
+      {/* 6. FINAL CTA */}
       <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="max-w-[1280px] mx-auto rounded-2xl border border-blue-100 bg-white px-6 sm:px-10 py-14 sm:py-16 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight max-w-2xl mx-auto">
+        <div className="max-w-[1280px] mx-auto rounded-2xl border border-white bg-white px-6 sm:px-10 py-14 sm:py-16 text-center">
+          <span className="mx-auto flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </span>
+          <h2 className="mt-5 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight max-w-2xl mx-auto">
             Need a Packaging Solution for Your Business?
           </h2>
           <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl mx-auto">
@@ -283,7 +361,7 @@ function Services() {
             business.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <FillButton to="/contact">Contact Us</FillButton>
+            <FillButton to="/contact" variant="cta">Contact Us</FillButton>
             <FillButton href={SHOP_URL} external>
               Visit Online Store
               <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

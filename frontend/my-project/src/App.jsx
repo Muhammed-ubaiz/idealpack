@@ -8,9 +8,11 @@ import Services from './components/Services'
 import Blogs from './components/Blogs'
 import BlogDetails from './components/BlogDetails'
 import Contact from './components/Contact'
+import LegalPage from './components/LegalPage'
+import NotFound from './components/NotFound'
 import Footer from './components/Footer'
 import ScrollToTop from './components/ScrollToTop'
-import WhatsAppFloat from './components/WhatsAppFloat'
+import AIChatWidget from './components/AIChatWidget'
 import './App.css'
 
 function App() {
@@ -27,9 +29,12 @@ function App() {
       <Route path="/blogs" element={<Blogs />} />
       <Route path="/blogs/:slug" element={<BlogDetails />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy-policy" element={<LegalPage title="Privacy Policy" />} />
+      <Route path="/terms" element={<LegalPage title="Terms of Service" />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
     <Footer />
-    <WhatsAppFloat />
+    <AIChatWidget />
     </>
   )
 }

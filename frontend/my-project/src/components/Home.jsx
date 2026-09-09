@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
-import heroVideo from '../assets/hero section.mp4'
-import heroPoster from '../assets/hero-poster.jpg'
+import heroImage from '../assets/1.png'
 import productsImage from '../assets/ChatGPT Image Sep 1, 2026, 03_43_39 PM.png'
 import kraftPackagingImage from '../assets/ChatGPT Image Sep 2, 2026, 03_31_56 PM.png'
 import foilContainersImage from '../assets/ChatGPT Image Sep 2, 2026, 03_36_23 PM.png'
@@ -309,28 +308,28 @@ const staggerContainer = {
   },
 }
 
+// Hero entrance — a clean, premium fade-up. Each element rises 30px with a
+// subtle fade on a smooth cubic-bezier(0.22, 1, 0.36, 1) curve, staggered one
+// after another (label → heading → description → features → buttons). Plays
+// once on load; the whole sequence settles in well under 2s. Kept separate so
+// other sections are unaffected.
+const heroStaggerContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+}
+
+const heroFadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+}
+
 function Home() {
   const heroRef = useRef(null)
   const statsRef = useRef(null)
   const [statsInView, setStatsInView] = useState(false)
   const prefersReducedMotion = useReducedMotion()
-
-  // Hero background video: the poster paints immediately; the video is only
-  // mounted after first paint (and skipped on data-saver connections) so it
-  // never blocks the hero render, then fades in once it can play.
-  const [mountVideo, setMountVideo] = useState(false)
-  const [videoReady, setVideoReady] = useState(false)
-
-  useEffect(() => {
-    if (typeof navigator !== 'undefined' && navigator.connection?.saveData) return
-    const start = () => setMountVideo(true)
-    if (typeof requestIdleCallback === 'function') {
-      const id = requestIdleCallback(start, { timeout: 2000 })
-      return () => cancelIdleCallback(id)
-    }
-    const id = setTimeout(start, 200)
-    return () => clearTimeout(id)
-  }, [])
 
   useEffect(() => {
     const el = statsRef.current
@@ -366,60 +365,51 @@ function Home() {
 
   return (
     <section className="bg-white">
-      <div ref={heroRef} className="relative overflow-hidden min-h-[85vh] md:min-h-screen bg-blue-950">
-        {/* Lightweight poster — paints immediately so the hero is never black
-            while the video downloads, and stays behind the video as a fallback. */}
+      <div ref={heroRef} className="relative overflow-hidden min-h-[85vh] md:min-h-screen bg-slate-950">
+        {/* Showcase image — covers the full hero, no distortion. The dark base
+            behind it keeps the hero readable until it paints. */}
         <motion.img
-          src={heroPoster}
+          src={heroImage}
           alt=""
           aria-hidden="true"
           fetchPriority="high"
-          className="absolute inset-0 w-full h-full object-cover"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover object-[62%_center] sm:object-center"
           style={prefersReducedMotion ? undefined : { scale: bgScale, y: bgY }}
         />
-        {mountVideo && (
-          <motion.video
-            src={heroVideo}
-            poster={heroPoster}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            onCanPlay={() => setVideoReady(true)}
-            onPlaying={() => setVideoReady(true)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-              videoReady ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={prefersReducedMotion ? undefined : { scale: bgScale, y: bgY }}
-          />
-        )}
-        <div className="absolute inset-0 bg-blue-950/55" />
+
+        {/* Premium directional overlay — strongest behind the left text area,
+            fading toward the products on the right so the image stays bright.
+            A touch stronger on small screens for readability. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/55 to-slate-900/20 sm:from-slate-950/80 sm:via-slate-900/35 sm:to-transparent" />
 
         <motion.div
-          className="relative z-10 flex min-h-[85vh] md:min-h-screen items-center justify-center px-4 sm:px-6 text-center"
+          className="relative z-10 flex min-h-[85vh] md:min-h-screen items-center justify-start px-6 sm:px-10 md:px-16 lg:px-24 text-left"
           style={prefersReducedMotion ? undefined : { y: contentY }}
         >
           <motion.div
-            variants={staggerContainer}
-            initial="hidden"
+            variants={heroStaggerContainer}
+            initial={prefersReducedMotion ? false : 'hidden'}
             animate="show"
-            className="w-full max-w-187"
+            className="w-full max-w-lg sm:max-w-xl lg:max-w-2xl"
           >
             <motion.p
-              variants={fadeUp}
+              variants={heroFadeUp}
               className="text-blue-400 text-xs sm:text-sm md:text-base font-semibold tracking-[0.15em] sm:tracking-[0.2em] uppercase"
             >
               Complete Packaging Range
             </motion.p>
 
             <motion.span
-              variants={fadeUp}
-              className="mx-auto mt-4 block w-14 h-px bg-white/80"
-            />
+              variants={heroFadeUp}
+              className="mt-4 flex h-1 w-16 overflow-hidden rounded-full"
+            >
+              <span className="w-1/2 bg-blue-400" />
+              <span className="w-1/2 bg-red-600" />
+            </motion.span>
 
             <motion.h1
-              variants={fadeUp}
+              variants={heroFadeUp}
               className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.15] sm:leading-[1.1] tracking-tight text-white"
             >
               PACKAGING &amp; HYGIENE <span className="text-blue-400">SOLUTIONS</span>
@@ -428,15 +418,15 @@ function Home() {
             </motion.h1>
 
             <motion.p
-              variants={fadeUp}
-              className="mt-5 sm:mt-6 text-sm sm:text-base md:text-lg text-slate-200/90 max-w-100 sm:max-w-140 mx-auto leading-relaxed"
+              variants={heroFadeUp}
+              className="mt-5 sm:mt-6 text-sm sm:text-base md:text-lg text-slate-100/90 max-w-md leading-relaxed"
             >
               Premium packaging, eco-friendly and hygiene solutions — all in one place.
             </motion.p>
 
             <motion.div
-              variants={fadeUp}
-              className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10 gap-y-3 sm:gap-y-4"
+              variants={heroFadeUp}
+              className="mt-8 sm:mt-10 flex flex-wrap items-center justify-start gap-x-6 sm:gap-x-10 gap-y-3 sm:gap-y-4"
             >
               {heroFeatures.map((f) => (
                 <div key={f.label} className="flex items-center gap-2">
@@ -447,48 +437,54 @@ function Home() {
             </motion.div>
 
             <motion.div
-              variants={fadeUp}
-              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+              variants={heroFadeUp}
+              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4"
             >
-              <button className="group relative overflow-hidden w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-white bg-transparent border border-white/40 hover:border-blue-400 hover:-translate-y-0.5 transition-all duration-300">
-                <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
+              <Link
+                to="/products"
+                className="group relative overflow-hidden inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-white bg-transparent border border-white/60 hover:border-red-600 hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <span className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
                 <span className="relative z-10">Explore Products &rarr;</span>
-              </button>
-              <button className="group relative overflow-hidden w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-white bg-white/5 backdrop-blur-sm border border-white/40 hover:border-blue-400 hover:-translate-y-0.5 transition-all duration-300">
-                <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
+              </Link>
+              <Link
+                to="/contact"
+                className="group relative overflow-hidden inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-white bg-transparent border border-white/60 hover:border-blue-400 hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
                 <span className="relative z-10">Contact Us &rarr;</span>
-              </button>
+              </Link>
             </motion.div>
           </motion.div>
         </motion.div>
       </div>
 
-      <div className="px-4 sm:px-6 md:px-16 py-10">
+      <div className="px-4 sm:px-6 md:px-16 py-12 bg-white">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-6 relative"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 relative"
         >
           {bottomFeatures.map((f) => (
             <motion.div
               key={f.label}
               variants={fadeUp}
-              className="group relative flex flex-col items-center text-center gap-3 overflow-hidden rounded-[28px] border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 px-4 py-6 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300"
+              className="group relative flex flex-col items-center text-center gap-3 overflow-hidden rounded-[28px] border border-blue-400/40 bg-white px-4 py-6 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-red-400 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300"
             >
               <span className="pointer-events-none absolute -top-6 -right-6 w-16 h-16 rounded-full bg-blue-200/40 blur-2xl" />
 
               <span className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-blue-50 text-blue-400 group-hover:bg-blue-400 group-hover:text-white transition-colors duration-300">
                 <Icon className="w-6 h-6 sm:w-7 sm:h-7">{f.icon}</Icon>
               </span>
-              <span className="relative text-xs sm:text-sm font-semibold text-blue-950">{f.label}</span>
+              <span className="relative text-xs sm:text-sm font-semibold text-slate-900">{f.label}</span>
             </motion.div>
           ))}
         </motion.div>
       </div>
 
-      <div className="px-4 sm:px-6 md:px-16 py-12 sm:py-14 bg-white">
+      <div className="px-4 sm:px-6 md:px-16 py-14 sm:py-16 bg-white">
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -498,14 +494,17 @@ function Home() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             About Us
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Your Trusted Packaging Partner
           </motion.h2>
@@ -517,7 +516,7 @@ function Home() {
 
           <motion.div
             variants={fadeUp}
-            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-blue-950 font-medium"
+            className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm text-slate-900 font-medium"
           >
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
@@ -536,7 +535,7 @@ function Home() {
           <motion.div variants={fadeUp} className="mt-5">
             <Link
               to="/about"
-              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-600 transition-colors"
+              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
             >
               Learn More
               <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
@@ -555,14 +554,17 @@ function Home() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Our Product Categories
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-950 tracking-tight leading-snug"
+            className="mt-6 text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-snug"
           >
             Explore Our Products
           </motion.h2>
@@ -581,12 +583,12 @@ function Home() {
             <motion.div
               key={c.label}
               variants={fadeUp}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-blue-950/10 hover:shadow-xl transition-all duration-300"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-blue-400/40 bg-white shadow-lg shadow-blue-950/10 hover:border-red-400 hover:shadow-xl transition-all duration-300"
             >
               <Link
                 to={slug ? `/products?category=${slug}` : '/products'}
                 aria-label={`View ${c.label} products`}
-                className="absolute inset-0 z-10"
+                className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
               />
               <div
                 className={`h-[180px] sm:h-[200px] md:h-auto md:aspect-[4/3] shrink-0 overflow-hidden ${
@@ -609,7 +611,7 @@ function Home() {
               <div className="relative flex-1 p-4 sm:p-5 md:absolute md:inset-x-0 md:bottom-0 md:flex-none">
                 <h3 className="font-semibold text-base text-slate-900 md:text-white">{c.label}</h3>
                 <span
-                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 group-hover:text-blue-500 md:text-blue-300 md:group-hover:text-white transition-colors"
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 group-hover:text-red-700 md:text-red-400 md:group-hover:text-white transition-colors"
                 >
                   View Products
                   <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
@@ -640,12 +642,12 @@ function Home() {
                   delay: index * 0.4,
                 }}
               >
-                <div className="group flex flex-col items-center justify-center text-center gap-2 w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[270px] lg:h-[270px] rounded-full mx-auto bg-gradient-to-br from-white to-blue-50/70 border border-blue-200 shadow-lg shadow-blue-400/10 hover:scale-103 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-400/30 transition-all duration-300">
-                  <span className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-blue-50 text-blue-400 shrink-0">
+                <div className="group flex flex-col items-center justify-center text-center gap-2 w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] lg:w-[270px] lg:h-[270px] rounded-full mx-auto bg-white border border-white/60 shadow-lg shadow-blue-950/15 hover:scale-103 hover:border-red-400 hover:shadow-xl hover:shadow-blue-950/25 transition-all duration-300">
+                  <span className="flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-red-50 text-red-600 shrink-0">
                     <Icon className="w-6 h-6 sm:w-7 sm:h-7">{stat.icon}</Icon>
                   </span>
                   <div className="mt-1 px-6">
-                    <p className="text-lg sm:text-xl font-bold text-blue-950 leading-tight">
+                    <p className="text-lg sm:text-xl font-bold text-slate-900 leading-tight">
                       {stat.target != null ? (
                         <Counter target={stat.target} suffix={stat.suffix} start={statsInView} />
                       ) : (
@@ -678,14 +680,17 @@ function Home() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Who We Serve
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Industries We Serve
           </motion.h2>
@@ -696,20 +701,20 @@ function Home() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6"
+          className="mt-10 sm:mt-12 grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"
         >
           {industries.map((ind) => (
             <motion.div
               key={ind.label}
               variants={fadeUp}
-              className="group relative flex flex-col items-center text-center gap-3 overflow-hidden rounded-[28px] border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 px-6 py-7 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300"
+              className="group relative flex min-h-[132px] flex-col items-center justify-center text-center gap-2 sm:min-h-0 sm:gap-3 overflow-hidden rounded-[18px] sm:rounded-[28px] border border-blue-400/40 bg-white px-3 py-4 sm:px-6 sm:py-7 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-red-400 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300"
             >
               <span className="pointer-events-none absolute -top-6 -right-6 w-20 h-20 rounded-full bg-blue-200/40 blur-2xl" />
 
-              <span className="relative flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 text-blue-400 group-hover:bg-blue-400 group-hover:text-white transition-colors duration-300">
-                <Icon className="w-6 h-6 sm:w-7 sm:h-7">{ind.icon}</Icon>
+              <span className="relative flex items-center justify-center w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-blue-50 text-blue-400 group-hover:bg-blue-400 group-hover:text-white transition-colors duration-300">
+                <Icon className="w-5 h-5 sm:w-7 sm:h-7">{ind.icon}</Icon>
               </span>
-              <span className="relative text-sm sm:text-base font-semibold text-blue-950">{ind.label}</span>
+              <span className="relative text-xs sm:text-base font-semibold text-slate-900 leading-snug">{ind.label}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -725,14 +730,17 @@ function Home() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-blue-400 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
           >
             Our Services
           </motion.p>
-          <motion.span variants={fadeUp} className="mx-auto mt-4 block w-14 h-px bg-blue-400" />
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-blue-950 tracking-tight"
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
           >
             Packaging Solutions Built for Your Business
           </motion.h2>
@@ -756,7 +764,7 @@ function Home() {
             <motion.div
               key={s.title}
               variants={fadeUp}
-              className={`group relative overflow-hidden rounded-[28px] border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 p-6 sm:p-8 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300 ${s.span}`}
+              className={`group relative overflow-hidden rounded-[28px] border border-blue-400/40 bg-white p-6 sm:p-8 shadow-md shadow-blue-950/5 hover:-translate-y-1.5 hover:border-red-400 hover:shadow-xl hover:shadow-blue-400/20 transition-all duration-300 ${s.span}`}
             >
               <span className="pointer-events-none absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-blue-200/30 blur-3xl" />
               <span className="pointer-events-none absolute -top-8 -left-8 w-20 h-20 rounded-full bg-blue-100/40 blur-2xl" />
@@ -765,47 +773,86 @@ function Home() {
                 <Icon className="w-7 h-7">{s.icon}</Icon>
               </span>
 
-              <h3 className="relative mt-5 text-lg sm:text-xl font-bold text-blue-950">{s.title}</h3>
+              <h3 className="relative mt-5 text-lg sm:text-xl font-bold text-slate-900">{s.title}</h3>
               <p className="relative mt-2 text-sm text-slate-600 leading-relaxed max-w-100">
                 {s.description}
               </p>
 
-              <a
-                href="#"
-                className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-400 hover:text-blue-600 transition-colors"
+              <Link
+                to="/services"
+                className="relative mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
               >
                 Learn More
                 <span className="transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-              </a>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
       </div>
 
-      <motion.div
-        variants={fadeUp}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.4 }}
-        className="px-4 sm:px-6 md:px-16 py-12 sm:py-16 bg-white text-center"
-      >
-        <a
-          href="https://idealpackstore.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold text-blue-950 bg-white border border-blue-950/15 overflow-hidden hover:-translate-y-0.5 hover:text-white transition-all duration-300 shadow-md shadow-blue-950/10"
+      
+
+      {/* SECTION — NEED ASSISTANCE CTA */}
+      <div className="px-4 sm:px-6 md:px-16 pb-16 sm:pb-24">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          className="mx-auto max-w-5xl bg-white px-6 sm:px-10 py-16 sm:py-20 text-center"
         >
-          <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
-          <span className="relative z-10 inline-flex items-center gap-2">
-            <Icon className="w-4.5 h-4.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 8V6a3 3 0 0 1 6 0v2" />
-            </Icon>
-            Shop Online
-            <span className="transition-transform duration-300 group-hover:translate-x-1">&#8599;</span>
-          </span>
-        </a>
-      </motion.div>
+          <motion.p
+            variants={fadeUp}
+            className="text-red-600 text-xs sm:text-sm font-semibold tracking-[0.2em] uppercase"
+          >
+            Need Assistance?
+          </motion.p>
+          <motion.span variants={fadeUp} className="mx-auto mt-4 flex h-1 w-16 overflow-hidden rounded-full">
+            <span className="w-1/2 bg-blue-400" />
+            <span className="w-1/2 bg-red-600" />
+          </motion.span>
+          <motion.h2
+            variants={fadeUp}
+            className="mt-6 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 tracking-tight"
+          >
+            Need Help Choosing the Right Product?
+          </motion.h2>
+          <motion.p
+            variants={fadeUp}
+            className="mx-auto mt-4 max-w-[650px] text-sm sm:text-base text-slate-600 leading-relaxed"
+          >
+            Our team can help you find the right packaging and hygiene solutions for your business
+            requirements.
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
+          >
+            <Link
+              to="/contact"
+              className="group relative overflow-hidden inline-flex items-center justify-center w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-red-600 bg-white border border-red-600 shadow-lg shadow-red-600/25 hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            >
+              <span className="absolute inset-0 bg-red-600 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
+              <span className="relative z-10 transition-colors duration-300 group-hover:text-white group-active:text-white">
+                Contact Us
+              </span>
+            </Link>
+            <a
+              href="https://idealpackstore.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative overflow-hidden inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 rounded-md font-semibold text-blue-500 bg-white border border-blue-400 hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
+            >
+              <span className="absolute inset-0 bg-blue-400 scale-x-0 group-hover:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-700 ease-in-out" />
+              <span className="relative z-10 inline-flex items-center gap-2 transition-colors duration-300 group-hover:text-white group-active:text-white">
+                Visit Online Store
+                <span aria-hidden="true">&#8599;</span>
+              </span>
+            </a>
+          </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }
