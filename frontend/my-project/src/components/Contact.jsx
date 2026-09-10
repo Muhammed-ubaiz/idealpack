@@ -10,7 +10,6 @@ import {
   Send,
   Package,
   Receipt,
-  Clock,
   FileText,
   PackageSearch,
   ChevronDown,
@@ -435,37 +434,6 @@ function Contact() {
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* BUSINESS HOURS */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-14 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight text-center">
-            Business Hours
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed text-center max-w-2xl mx-auto">
-            Our team is available during working hours to assist with quotations, orders, product
-            enquiries and customer support.
-          </p>
-          <div className="mt-8 max-w-md mx-auto rounded-[18px] border border-blue-400/40 bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-400">
-                <Clock className="h-5 w-5" strokeWidth={1.8} />
-              </span>
-              <h3 className="text-base font-bold text-slate-900">Working Hours</h3>
-            </div>
-            <dl className="mt-5 flex flex-col gap-3 text-sm">
-              <div className="flex items-center justify-between gap-4">
-                <dt className="font-medium text-slate-900">Monday &ndash; Saturday</dt>
-                <dd className="text-slate-600">9:00 AM &ndash; 6:00 PM</dd>
-              </div>
-              <div className="flex items-center justify-between gap-4 border-t border-blue-400/20 pt-3">
-                <dt className="font-medium text-slate-900">Sunday</dt>
-                <dd className="text-slate-600">Closed</dd>
-              </div>
-            </dl>
           </div>
         </div>
       </section>
