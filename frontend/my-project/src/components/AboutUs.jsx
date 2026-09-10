@@ -76,7 +76,7 @@ function Counter({ target, suffix = '', duration = 2000, start }) {
 
 const strengthStats = [
   {
-    target: 100,
+    target: 3000,
     suffix: '+',
     label: 'Products',
     description: 'Wide range of premium packaging solutions.',
@@ -88,9 +88,9 @@ const strengthStats = [
     ),
   },
   {
-    target: 500,
+    target: 10000,
     suffix: '+',
-    label: 'Happy Clients',
+    label: 'Happy Customers',
     description: 'Trusted by businesses across industries.',
     icon: (
       <>

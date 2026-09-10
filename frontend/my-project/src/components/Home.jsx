@@ -214,7 +214,7 @@ const services = [
 
 const trustStats = [
   {
-    target: 100,
+    target: 3000,
     suffix: '+',
     label: 'Products',
     description: 'Wide range of premium packaging solutions.',
@@ -226,10 +226,10 @@ const trustStats = [
     ),
   },
   {
-    target: 500,
-    suffix: '+',
-    label: 'Happy Clients',
-    description: 'Trusted by businesses across industries.',
+  target: 10000,
+  suffix: '+',
+  label: 'Happy Customers',
+  description: 'Trusted by businesses across industries.',
     icon: (
       <>
         <circle cx="9" cy="8" r="3" strokeLinecap="round" strokeLinejoin="round" />
