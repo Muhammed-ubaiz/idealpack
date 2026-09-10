@@ -520,7 +520,7 @@ function Home() {
           >
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              100+ Products
+              3000+ Products
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
@@ -528,7 +528,7 @@ function Home() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              500+ Happy Clients
+              10000+ Happy Customers
             </span>
           </motion.div>
 
