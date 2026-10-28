@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
-import { ExternalLink, ImagePlus, LogOut, Plus, Search, Trash2, X } from 'lucide-react'
+import { ExternalLink, Eye, ImagePlus, LogOut, Pencil, Plus, Save, Search, Trash2, X } from 'lucide-react'
 import { auth } from '../../config/firebase'
 import { products } from '../../data/products'
-import { blogs as staticBlogs, formatDate } from '../../data/blogs'
 import {
   addBlog,
   deleteBlog,
+  formatDate,
   imageFileToDataUrl,
   slugify,
   subscribeBlogs,
+  updateBlog,
 } from '../../lib/blogStore'
 import {
   alertError,
@@ -45,6 +46,23 @@ const emptyForm = () => ({
   relatedOptions: '',
   shopUrl: '',
   featured: false,
+})
+
+/** Form values for an existing post (lists become one item per line). */
+const formFromPost = (post) => ({
+  title: post.title || '',
+  category: post.category || '',
+  date: post.date || today(),
+  excerpt: post.excerpt || '',
+  intro: post.intro || '',
+  benefits: (post.benefits || []).join('\n'),
+  uses: (post.uses || []).join('\n'),
+  businesses: (post.businesses || []).join('\n'),
+  practical: post.practical || '',
+  tip: post.tip || '',
+  relatedOptions: post.relatedOptions || '',
+  shopUrl: post.shopUrl === STORE ? '' : post.shopUrl || '',
+  featured: Boolean(post.featured),
 })
 
 /** One item per non-empty line. */
@@ -83,9 +101,11 @@ function AdminBlogs() {
   const [productQuery, setProductQuery] = useState('')
   const [posts, setPosts] = useState([])
   const [loadingPosts, setLoadingPosts] = useState(true)
+  // The post being edited, or null when the form creates a new post.
+  const [editing, setEditing] = useState(null)
 
   const categories = useMemo(
-    () => [...new Set([...staticBlogs, ...posts].map((b) => b.category))].sort(),
+    () => [...new Set(posts.map((b) => b.category).filter(Boolean))].sort(),
     [posts],
   )
 
@@ -135,6 +155,25 @@ function AdminBlogs() {
     }
   }
 
+  function resetForm() {
+    setEditing(null)
+    setForm(emptyForm())
+    setImage('')
+    setImageUrlInput('')
+    setRelated([])
+    setProductQuery('')
+  }
+
+  function startEdit(post) {
+    setEditing(post)
+    setForm(formFromPost(post))
+    setImage(post.image || '')
+    setImageUrlInput('')
+    setRelated(post.relatedProducts || [])
+    setProductQuery('')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   function addRelated(p) {
     if (related.length >= MAX_RELATED) return
     setRelated((r) => [...r, { name: p.name, image: p.image, url: p.storeUrl }])
@@ -144,7 +183,8 @@ function AdminBlogs() {
   async function handleSubmit(e) {
     e.preventDefault()
     const title = form.title.trim()
-    const slug = slugify(title)
+    // Keep the original URL when editing so existing links keep working.
+    const slug = editing ? editing.slug : slugify(title)
     if (!title || !form.category.trim() || !form.excerpt.trim() || !form.intro.trim() || !image) {
       alertValidation(
         'Please Check Your Details',
@@ -156,7 +196,7 @@ function AdminBlogs() {
       alertValidation('Invalid Title', 'The title must contain letters or numbers.')
       return
     }
-    if ([...staticBlogs, ...posts].some((b) => b.slug === slug)) {
+    if (!editing && posts.some((b) => b.slug === slug)) {
       alertValidation('Duplicate Title', 'A blog with this title already exists. Please use a different title.')
       return
     }
@@ -180,21 +220,25 @@ function AdminBlogs() {
       relatedProducts: related,
     }
 
-    showLoading('Publishing…')
+    showLoading(editing ? 'Saving…' : 'Publishing…')
     try {
-      await addBlog(blog)
-      setForm(emptyForm())
-      setImage('')
-      setImageUrlInput('')
-      setRelated([])
+      if (editing) {
+        await updateBlog(editing.id, blog)
+      } else {
+        await addBlog(blog)
+      }
+      resetForm()
       closeAlert()
-      await alertSuccess('Blog Published!', `"${title}" is now live on the Blogs page.`)
+      await alertSuccess(
+        editing ? 'Blog Updated!' : 'Blog Published!',
+        `"${title}" is now live on the Blogs page.`,
+      )
     } catch (err) {
       closeAlert()
       alertError(
-        'Could Not Publish',
+        editing ? 'Could Not Save' : 'Could Not Publish',
         err.code === 'permission-denied'
-          ? 'This account is not allowed to add blogs. Check the Firestore security rules.'
+          ? 'This account is not allowed to change blogs. Check the Firestore security rules.'
           : err.message,
       )
     }
@@ -209,6 +253,7 @@ function AdminBlogs() {
     if (!ok) return
     try {
       await deleteBlog(post.id)
+      if (editing?.id === post.id) resetForm()
     } catch (err) {
       alertError('Could Not Delete', err.message)
     }
@@ -245,10 +290,31 @@ function AdminBlogs() {
       </header>
 
       <main className="mx-auto max-w-[1180px] px-4 sm:px-6 py-8 sm:py-10">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Add New Blog</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Fill in the details below. Fields marked <span className="text-red-600">*</span> are required.
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+              {editing ? 'Edit Blog' : 'Add New Blog'}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              {editing ? (
+                <>
+                  Editing <span className="font-medium text-slate-700">&ldquo;{editing.title}&rdquo;</span>.{' '}
+                </>
+              ) : null}
+              Fields marked <span className="text-red-600">*</span> are required.
+            </p>
+          </div>
+          {editing && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-red-600 hover:text-red-600"
+            >
+              <X className="h-4 w-4" />
+              Cancel Edit
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3" noValidate>
           <div className="flex flex-col gap-6 lg:col-span-2">
@@ -257,7 +323,7 @@ function AdminBlogs() {
                 <input value={form.title} onChange={set('title')} className={inputClass} />
               </Field>
               {form.title && (
-                <p className="-mt-2 text-xs text-slate-400 break-all">URL: /blogs/{slugify(form.title)}</p>
+                <p className="-mt-2 text-xs text-slate-400 break-all">URL: /blogs/{editing ? editing.slug : slugify(form.title)}</p>
               )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Category" required>
@@ -424,26 +490,29 @@ function AdminBlogs() {
               type="submit"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-red-700"
             >
-              <Plus className="h-4 w-4" />
-              Publish Blog
+              {editing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+              {editing ? 'Save Changes' : 'Publish Blog'}
             </button>
           </div>
         </form>
 
         <section className="mt-14">
-          <h2 className="text-xl font-bold text-slate-900">Added Blogs</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Blogs added from this page. Built-in articles are managed in the code.
-          </p>
+          <h2 className="text-xl font-bold text-slate-900">
+            All Blogs{!loadingPosts && <span className="ml-2 text-slate-400">({posts.length})</span>}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">Newest first. Changes appear on the website instantly.</p>
           <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
             {loadingPosts ? (
               <p className="p-6 text-sm text-slate-500">Loading…</p>
             ) : posts.length === 0 ? (
-              <p className="p-6 text-sm text-slate-500">No blogs added yet.</p>
+              <p className="p-6 text-sm text-slate-500">No blogs yet. Publish your first one above.</p>
             ) : (
               <ul className="divide-y divide-slate-100">
                 {posts.map((post) => (
-                  <li key={post.id} className="flex items-center gap-4 p-4">
+                  <li
+                    key={post.id}
+                    className={`flex items-center gap-3 sm:gap-4 p-4 ${editing?.id === post.id ? 'bg-blue-50/60' : ''}`}
+                  >
                     <img src={post.image} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
                     <div className="min-w-0 flex-1">
                       <Link
@@ -458,9 +527,28 @@ function AdminBlogs() {
                         {post.featured && <span className="ml-2 font-semibold text-red-600">Featured</span>}
                       </p>
                     </div>
+                    <Link
+                      to={`/blogs/${post.slug}`}
+                      target="_blank"
+                      aria-label={`View ${post.title}`}
+                      title="View"
+                      className="rounded-lg p-2 text-slate-400 hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => startEdit(post)}
+                      aria-label={`Edit ${post.title}`}
+                      title="Edit"
+                      className="rounded-lg p-2 text-slate-400 hover:bg-blue-50 hover:text-blue-500"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleDelete(post)}
+                      title="Delete"
                       aria-label={`Delete ${post.title}`}
                       className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
                     >

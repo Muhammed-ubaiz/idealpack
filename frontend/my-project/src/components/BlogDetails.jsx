@@ -1,7 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
-import { formatDate } from '../data/blogs'
-import { useBlogs } from '../lib/blogStore'
+import { formatDate, useBlogs } from '../lib/blogStore'
 import FillButton from './FillButton'
 import BlogCta from './BlogCta'
 
@@ -36,7 +35,22 @@ function BlogDetails() {
   const blog = blogs.find((b) => b.slug === slug)
 
   if (!blog && loading) {
-    return <div className="bg-white px-4 py-24 text-center text-sm text-slate-500">Loading…</div>
+    return (
+      <div aria-busy="true" aria-label="Loading article" className="bg-white px-4 sm:px-6 lg:px-8 py-12 sm:py-16 animate-pulse">
+        <div className="max-w-3xl mx-auto mt-12">
+          <div className="h-3 w-28 rounded bg-slate-100" />
+          <div className="mt-5 h-10 w-full rounded bg-slate-100" />
+          <div className="mt-3 h-10 w-2/3 rounded bg-slate-100" />
+          <div className="mt-5 h-3 w-32 rounded bg-slate-100" />
+        </div>
+        <div className="mt-10 max-w-4xl mx-auto aspect-[16/9] rounded-2xl bg-slate-100" />
+        <div className="mt-10 max-w-3xl mx-auto flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-4 w-full rounded bg-slate-100" />
+          ))}
+        </div>
+      </div>
+    )
   }
 
   if (!blog) {

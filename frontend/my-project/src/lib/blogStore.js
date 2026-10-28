@@ -8,18 +8,26 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '../config/firebase'
-import { blogs as staticBlogs } from '../data/blogs'
 
 /**
- * Blog storage for admin-added articles.
+ * Blog storage. Every article lives in the Firestore `blogs` collection and is
+ * managed from the admin page. Each document has the article fields plus a
+ * `createdAt` server timestamp. A live `onSnapshot` listener keeps every page
+ * in sync, so new, edited or deleted posts show up without a refresh.
  *
- * Built-in articles live in ../data/blogs.js. Articles added from the admin
- * page are stored in the Firestore `blogs` collection with the same fields
- * plus a `createdAt` server timestamp. A live `onSnapshot` listener keeps
- * every page in sync, so new or deleted posts show up without a refresh.
- * If Firebase is not configured or unreachable, the static list is used.
+ * Article fields:
+ *   slug, title, category, date (YYYY-MM-DD), image, excerpt, featured, shopUrl
+ *   intro          - what the product / category is
+ *   benefits[]     - main benefits
+ *   uses[]         - recommended uses
+ *   businesses[]   - suitable businesses
+ *   practical      - why it is practical
+ *   tip            - useful tip callout
+ *   relatedOptions - related Ideal Pack packaging options (prose)
+ *   relatedProducts[] - {name, image, url} from the store
  */
 const blogsCol = collection(db, 'blogs')
 
@@ -27,8 +35,21 @@ export function addBlog(blog) {
   return addDoc(blogsCol, { ...blog, createdAt: serverTimestamp() })
 }
 
+/** Update an existing post. `createdAt` is left untouched so its position stays the same. */
+export function updateBlog(id, blog) {
+  return updateDoc(doc(db, 'blogs', id), { ...blog, updatedAt: serverTimestamp() })
+}
+
 export function deleteBlog(id) {
   return deleteDoc(doc(db, 'blogs', id))
+}
+
+export function formatDate(iso) {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 }
 
 /** Lower-case, hyphenated URL slug from a title. */
@@ -42,10 +63,7 @@ export function slugify(text) {
     .replace(/^-|-$/g, '')
 }
 
-/**
- * Sort key: when the post was created. Built-in articles (and any document
- * without a timestamp) fall back to their article date.
- */
+/** Sort key: when the post was created, falling back to the article date. */
 const createdMillis = (b) => b.createdAt?.toMillis?.() ?? (Date.parse(b.date) || 0)
 
 /** Newest first. */
@@ -75,13 +93,8 @@ export function subscribeBlogs(onChange, onError) {
   )
 }
 
-function mergeBlogs(remote) {
-  const remoteSlugs = new Set(remote.map((b) => b.slug))
-  return [...remote, ...staticBlogs.filter((b) => !remoteSlugs.has(b.slug))].sort(byNewest)
-}
-
 // One shared Firestore listener for all public pages, open while any page uses it.
-let shared = { blogs: mergeBlogs([]), loading: true }
+let shared = { blogs: [], loading: true, error: null }
 const listeners = new Set()
 let unsubscribe = null
 
@@ -94,10 +107,10 @@ function subscribeShared(onStoreChange) {
   listeners.add(onStoreChange)
   if (!unsubscribe) {
     unsubscribe = subscribeBlogs(
-      (remote) => emit({ blogs: mergeBlogs(remote), loading: false }),
+      (blogs) => emit({ blogs, loading: false, error: null }),
       (err) => {
         if (import.meta.env.DEV) console.warn('[blogs] Firestore unavailable:', err.message)
-        emit({ ...shared, loading: false })
+        emit({ ...shared, loading: false, error: err })
       },
     )
   }
@@ -110,7 +123,7 @@ function subscribeShared(onStoreChange) {
   }
 }
 
-/** All blogs (Firestore + built-in), newest first, updated live. */
+/** All blogs from Firestore, newest first, updated live: `{ blogs, loading, error }`. */
 export function useBlogs() {
   return useSyncExternalStore(subscribeShared, () => shared)
 }

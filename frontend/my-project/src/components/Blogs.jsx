@@ -1,11 +1,59 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
-import { formatDate } from '../data/blogs'
-import { useBlogs } from '../lib/blogStore'
+import { ArrowRight, FileText } from 'lucide-react'
+import { formatDate, useBlogs } from '../lib/blogStore'
 import BlogCta from './BlogCta'
 
+/** Placeholder shown while posts load from Firestore. */
+function BlogsSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="Loading blogs" className="animate-pulse">
+      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+        <div className="max-w-[1180px] mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-3 aspect-[4/3] rounded-2xl bg-slate-100" />
+          <div className="lg:col-span-2">
+            <div className="h-3 w-28 rounded bg-slate-100" />
+            <div className="mt-5 h-8 w-full rounded bg-slate-100" />
+            <div className="mt-3 h-8 w-3/4 rounded bg-slate-100" />
+            <div className="mt-6 h-4 w-full rounded bg-slate-100" />
+            <div className="mt-2 h-4 w-5/6 rounded bg-slate-100" />
+            <div className="mt-6 h-3 w-24 rounded bg-slate-100" />
+          </div>
+        </div>
+      </section>
+      <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t-2 border-blue-100">
+        <div className="max-w-[1180px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+          {[0, 1, 2].map((i) => (
+            <div key={i}>
+              <div className="aspect-[4/3] rounded-2xl bg-slate-100" />
+              <div className="mt-4 h-3 w-24 rounded bg-slate-100" />
+              <div className="mt-3 h-5 w-full rounded bg-slate-100" />
+              <div className="mt-2 h-5 w-2/3 rounded bg-slate-100" />
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function BlogsEmpty() {
+  return (
+    <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+      <div className="max-w-xl mx-auto rounded-2xl border border-blue-400/40 bg-blue-50/40 px-6 py-12 text-center">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white text-red-600">
+          <FileText className="h-6 w-6" />
+        </span>
+        <h2 className="mt-5 text-xl font-bold text-slate-900">No articles yet</h2>
+        <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+          New product guides and packaging stories are on the way. Please check back soon.
+        </p>
+      </div>
+    </section>
+  )
+}
+
 function Blogs() {
-  const { blogs } = useBlogs()
+  const { blogs, loading } = useBlogs()
   const featured = blogs.find((b) => b.featured) || blogs[0]
   const rest = blogs.filter((b) => b !== featured)
 
@@ -31,79 +79,89 @@ function Blogs() {
         </div>
       </section>
 
-      {/* FEATURED GUIDE */}
-      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="max-w-[1180px] mx-auto">
-          <Link
-            to={`/blogs/${featured.slug}`}
-            className="group grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center"
-          >
-            <div className="lg:col-span-3 overflow-hidden rounded-2xl border border-blue-400/40 bg-white transition-colors duration-300 group-hover:border-red-400">
-              <img
-                src={featured.image}
-                alt={featured.title}
-                className="w-full aspect-[4/3] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-            </div>
-            <div className="lg:col-span-2">
-              <p className="inline-flex items-center gap-2 text-red-600 text-xs font-semibold tracking-[0.2em] uppercase">
-                <span className="h-3.5 w-1 rounded-full bg-red-600" />
-                {featured.category}
-              </p>
-              <h2 className="mt-4 text-2xl sm:text-3xl md:text-[2.1rem] font-bold text-slate-900 tracking-tight leading-tight transition-colors group-hover:text-red-600">
-                {featured.title}
-              </h2>
-              <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
-                {featured.excerpt}
-              </p>
-              <p className="mt-5 text-xs text-slate-400">{formatDate(featured.date)}</p>
-              <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 transition-colors group-hover:text-red-700">
-                Read Guide
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* ALL GUIDES */}
-      <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t-2 border-blue-100">
-        <div className="max-w-[1180px] mx-auto">
-          <span className="flex h-1 w-16 overflow-hidden rounded-full">
-            <span className="w-1/2 bg-blue-400" />
-            <span className="w-1/2 bg-red-600" />
-          </span>
-          <h2 className="mt-5 text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Product Guides
-          </h2>
-
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-            {rest.map((post) => (
-              <Link key={post.id} to={`/blogs/${post.slug}`} className="group block">
-                <div className="overflow-hidden rounded-2xl border border-blue-400/40 bg-white transition-colors duration-300 group-hover:border-red-400">
+      {loading ? (
+        <BlogsSkeleton />
+      ) : !featured ? (
+        <BlogsEmpty />
+      ) : (
+        <>
+          {/* FEATURED GUIDE */}
+          <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+            <div className="max-w-[1180px] mx-auto">
+              <Link
+                to={`/blogs/${featured.slug}`}
+                className="group grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center"
+              >
+                <div className="lg:col-span-3 overflow-hidden rounded-2xl border border-blue-400/40 bg-white transition-colors duration-300 group-hover:border-red-400">
                   <img
-                    src={post.image}
-                    alt={post.title}
+                    src={featured.image}
+                    alt={featured.title}
                     className="w-full aspect-[4/3] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </div>
-                <p className="mt-4 inline-flex items-center gap-2 text-red-600 text-[11px] font-semibold tracking-[0.16em] uppercase">
-                  <span className="h-3 w-1 rounded-full bg-red-600" />
-                  {post.category}
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900 leading-snug transition-colors group-hover:text-red-600">
-                  {post.title}
-                </h3>
-                <p className="mt-2 text-xs text-slate-400">{formatDate(post.date)}</p>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 transition-colors group-hover:text-red-700">
-                  Read Article
-                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
+                <div className="lg:col-span-2">
+                  <p className="inline-flex items-center gap-2 text-red-600 text-xs font-semibold tracking-[0.2em] uppercase">
+                    <span className="h-3.5 w-1 rounded-full bg-red-600" />
+                    {featured.category}
+                  </p>
+                  <h2 className="mt-4 text-2xl sm:text-3xl md:text-[2.1rem] font-bold text-slate-900 tracking-tight leading-tight transition-colors group-hover:text-red-600">
+                    {featured.title}
+                  </h2>
+                  <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
+                    {featured.excerpt}
+                  </p>
+                  <p className="mt-5 text-xs text-slate-400">{formatDate(featured.date)}</p>
+                  <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 transition-colors group-hover:text-red-700">
+                    Read Guide
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
+          </section>
+
+          {/* ALL GUIDES */}
+          {rest.length > 0 && (
+            <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 border-t-2 border-blue-100">
+              <div className="max-w-[1180px] mx-auto">
+                <span className="flex h-1 w-16 overflow-hidden rounded-full">
+                  <span className="w-1/2 bg-blue-400" />
+                  <span className="w-1/2 bg-red-600" />
+                </span>
+                <h2 className="mt-5 text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                  Product Guides
+                </h2>
+
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                  {rest.map((post) => (
+                    <Link key={post.id} to={`/blogs/${post.slug}`} className="group block">
+                      <div className="overflow-hidden rounded-2xl border border-blue-400/40 bg-white transition-colors duration-300 group-hover:border-red-400">
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          className="w-full aspect-[4/3] object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                      </div>
+                      <p className="mt-4 inline-flex items-center gap-2 text-red-600 text-[11px] font-semibold tracking-[0.16em] uppercase">
+                        <span className="h-3 w-1 rounded-full bg-red-600" />
+                        {post.category}
+                      </p>
+                      <h3 className="mt-2 text-lg font-semibold text-slate-900 leading-snug transition-colors group-hover:text-red-600">
+                        {post.title}
+                      </h3>
+                      <p className="mt-2 text-xs text-slate-400">{formatDate(post.date)}</p>
+                      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 transition-colors group-hover:text-red-700">
+                        Read Article
+                        <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
+      )}
 
       {/* FINAL CTA */}
       <BlogCta />
