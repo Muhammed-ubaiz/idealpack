@@ -8,10 +8,9 @@ import { blogs as staticBlogs, formatDate } from '../../data/blogs'
 import {
   addBlog,
   deleteBlog,
-  fetchRemoteBlogs,
   imageFileToDataUrl,
-  invalidateBlogs,
   slugify,
+  subscribeBlogs,
 } from '../../lib/blogStore'
 import {
   alertError,
@@ -98,12 +97,19 @@ function AdminBlogs() {
       .slice(0, 6)
   }, [productQuery, related])
 
+  // Live list: adds and deletes show up immediately, newest first.
   useEffect(() => {
-    if (!user) return
-    fetchRemoteBlogs()
-      .then(setPosts)
-      .catch((err) => alertError('Could Not Load Posts', err.message))
-      .finally(() => setLoadingPosts(false))
+    if (!user) return undefined
+    return subscribeBlogs(
+      (list) => {
+        setPosts(list)
+        setLoadingPosts(false)
+      },
+      (err) => {
+        setLoadingPosts(false)
+        alertError('Could Not Load Posts', err.message)
+      },
+    )
   }, [user])
 
   if (user === undefined) {
@@ -176,9 +182,7 @@ function AdminBlogs() {
 
     showLoading('Publishing…')
     try {
-      const ref = await addBlog(blog)
-      invalidateBlogs()
-      setPosts((p) => [{ ...blog, id: ref.id }, ...p].sort((a, b) => b.date.localeCompare(a.date)))
+      await addBlog(blog)
       setForm(emptyForm())
       setImage('')
       setImageUrlInput('')
@@ -205,8 +209,6 @@ function AdminBlogs() {
     if (!ok) return
     try {
       await deleteBlog(post.id)
-      invalidateBlogs()
-      setPosts((p) => p.filter((x) => x.id !== post.id))
     } catch (err) {
       alertError('Could Not Delete', err.message)
     }

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import {
   addDoc,
   collection,
   deleteDoc,
   doc,
-  getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -16,17 +16,12 @@ import { blogs as staticBlogs } from '../data/blogs'
  * Blog storage for admin-added articles.
  *
  * Built-in articles live in ../data/blogs.js. Articles added from the admin
- * page are stored in the Firestore `blogs` collection with the same fields,
- * and `useBlogs()` merges both lists (newest first) for the public pages.
+ * page are stored in the Firestore `blogs` collection with the same fields
+ * plus a `createdAt` server timestamp. A live `onSnapshot` listener keeps
+ * every page in sync, so new or deleted posts show up without a refresh.
  * If Firebase is not configured or unreachable, the static list is used.
  */
 const blogsCol = collection(db, 'blogs')
-
-export async function fetchRemoteBlogs() {
-  if (!isFirebaseConfigured) return []
-  const snap = await getDocs(query(blogsCol, orderBy('date', 'desc')))
-  return snap.docs.map((d) => ({ ...d.data(), id: d.id }))
-}
 
 export function addBlog(blog) {
   return addDoc(blogsCol, { ...blog, createdAt: serverTimestamp() })
@@ -47,46 +42,77 @@ export function slugify(text) {
     .replace(/^-|-$/g, '')
 }
 
-function mergeBlogs(remote) {
-  const remoteSlugs = new Set(remote.map((b) => b.slug))
-  return [...remote, ...staticBlogs.filter((b) => !remoteSlugs.has(b.slug))].sort((a, b) =>
-    b.date.localeCompare(a.date),
+/**
+ * Sort key: when the post was created. Built-in articles (and any document
+ * without a timestamp) fall back to their article date.
+ */
+const createdMillis = (b) => b.createdAt?.toMillis?.() ?? (Date.parse(b.date) || 0)
+
+/** Newest first. */
+export const byNewest = (a, b) => createdMillis(b) - createdMillis(a)
+
+/**
+ * Live list of Firestore blogs, newest first. Calls `onChange` immediately
+ * after a local add/delete (Firestore applies pending writes locally, with an
+ * estimated `createdAt`) and again whenever the collection changes.
+ * Returns the unsubscribe function.
+ */
+export function subscribeBlogs(onChange, onError) {
+  if (!isFirebaseConfigured) {
+    onChange([])
+    return () => {}
+  }
+  return onSnapshot(
+    query(blogsCol, orderBy('createdAt', 'desc')),
+    (snap) => {
+      const posts = snap.docs.map((d) => ({
+        ...d.data({ serverTimestamps: 'estimate' }),
+        id: d.id,
+      }))
+      onChange(posts.sort(byNewest))
+    },
+    onError,
   )
 }
 
-// Cached across page navigations so the blog list doesn't refetch every time.
-let cache = null
-
-/** All blogs (Firestore + built-in). `loading` is true until Firestore answers. */
-export function useBlogs() {
-  const [state, setState] = useState(() => ({
-    blogs: cache || mergeBlogs([]),
-    loading: !cache,
-  }))
-
-  useEffect(() => {
-    if (cache) return
-    let active = true
-    fetchRemoteBlogs()
-      .then((remote) => {
-        cache = mergeBlogs(remote)
-        if (active) setState({ blogs: cache, loading: false })
-      })
-      .catch((err) => {
-        if (import.meta.env.DEV) console.warn('[blogs] Firestore unavailable:', err.message)
-        if (active) setState((s) => ({ ...s, loading: false }))
-      })
-    return () => {
-      active = false
-    }
-  }, [])
-
-  return state
+function mergeBlogs(remote) {
+  const remoteSlugs = new Set(remote.map((b) => b.slug))
+  return [...remote, ...staticBlogs.filter((b) => !remoteSlugs.has(b.slug))].sort(byNewest)
 }
 
-/** Drop the cached list so the public pages pick up admin changes. */
-export function invalidateBlogs() {
-  cache = null
+// One shared Firestore listener for all public pages, open while any page uses it.
+let shared = { blogs: mergeBlogs([]), loading: true }
+const listeners = new Set()
+let unsubscribe = null
+
+function emit(next) {
+  shared = next
+  listeners.forEach((fn) => fn())
+}
+
+function subscribeShared(onStoreChange) {
+  listeners.add(onStoreChange)
+  if (!unsubscribe) {
+    unsubscribe = subscribeBlogs(
+      (remote) => emit({ blogs: mergeBlogs(remote), loading: false }),
+      (err) => {
+        if (import.meta.env.DEV) console.warn('[blogs] Firestore unavailable:', err.message)
+        emit({ ...shared, loading: false })
+      },
+    )
+  }
+  return () => {
+    listeners.delete(onStoreChange)
+    if (listeners.size === 0 && unsubscribe) {
+      unsubscribe()
+      unsubscribe = null
+    }
+  }
+}
+
+/** All blogs (Firestore + built-in), newest first, updated live. */
+export function useBlogs() {
+  return useSyncExternalStore(subscribeShared, () => shared)
 }
 
 /**
