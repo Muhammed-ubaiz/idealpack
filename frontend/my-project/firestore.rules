@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Admin accounts allowed to add / delete blogs.
+    // Replace with the email of the admin user created in Firebase Authentication.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['admin@idealpack.com'];
+    }
+
+    // Anyone can read blogs; only admins can write them.
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
+
+
+
+
+

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
-import { blogs, formatDate } from '../data/blogs'
+import { formatDate } from '../data/blogs'
+import { useBlogs } from '../lib/blogStore'
 import FillButton from './FillButton'
 import BlogCta from './BlogCta'
 
@@ -31,7 +32,12 @@ function BulletList({ items }) {
 
 function BlogDetails() {
   const { slug } = useParams()
+  const { blogs, loading } = useBlogs()
   const blog = blogs.find((b) => b.slug === slug)
+
+  if (!blog && loading) {
+    return <div className="bg-white px-4 py-24 text-center text-sm text-slate-500">Loading…</div>
+  }
 
   if (!blog) {
     return (
@@ -87,32 +93,45 @@ function BlogDetails() {
 
         {/* body */}
         <div className="mt-10 max-w-3xl mx-auto">
-          <p className="text-[1.05rem] leading-8 text-slate-600">{blog.intro}</p>
+          <p className="text-[1.05rem] leading-8 text-slate-600 whitespace-pre-line">{blog.intro}</p>
 
-          <Section title="Key Benefits">
-            <BulletList items={blog.benefits} />
-          </Section>
+          {/* admin-added articles may leave optional sections empty */}
+          {blog.benefits?.length > 0 && (
+            <Section title="Key Benefits">
+              <BulletList items={blog.benefits} />
+            </Section>
+          )}
 
-          <Section title="Recommended Uses">
-            <BulletList items={blog.uses} />
-          </Section>
+          {blog.uses?.length > 0 && (
+            <Section title="Recommended Uses">
+              <BulletList items={blog.uses} />
+            </Section>
+          )}
 
-          <Section title="Suitable Businesses">
-            <BulletList items={blog.businesses} />
-          </Section>
+          {blog.businesses?.length > 0 && (
+            <Section title="Suitable Businesses">
+              <BulletList items={blog.businesses} />
+            </Section>
+          )}
 
-          <Section title="Why It's Practical">
-            <p className="mt-5 text-[1.05rem] leading-8 text-slate-600">{blog.practical}</p>
-          </Section>
+          {blog.practical && (
+            <Section title="Why It's Practical">
+              <p className="mt-5 text-[1.05rem] leading-8 text-slate-600">{blog.practical}</p>
+            </Section>
+          )}
 
-          <div className="mt-7 rounded-xl border border-blue-400/40 border-l-4 border-l-red-600 bg-blue-50/60 p-5 sm:p-6 text-[1rem] leading-7 text-slate-700">
-            <span className="mr-2 font-semibold text-red-600">Tip</span>
-            {blog.tip}
-          </div>
+          {blog.tip && (
+            <div className="mt-7 rounded-xl border border-blue-400/40 border-l-4 border-l-red-600 bg-blue-50/60 p-5 sm:p-6 text-[1rem] leading-7 text-slate-700">
+              <span className="mr-2 font-semibold text-red-600">Tip</span>
+              {blog.tip}
+            </div>
+          )}
 
-          <Section title="Related Packaging Options">
-            <p className="mt-5 text-[1.05rem] leading-8 text-slate-600">{blog.relatedOptions}</p>
-          </Section>
+          {blog.relatedOptions && (
+            <Section title="Related Packaging Options">
+              <p className="mt-5 text-[1.05rem] leading-8 text-slate-600">{blog.relatedOptions}</p>
+            </Section>
+          )}
 
           <div className="mt-10">
             <FillButton href={blog.shopUrl} external variant="cta">
@@ -124,7 +143,7 @@ function BlogDetails() {
       </article>
 
       {/* RELATED PRODUCTS */}
-      {blog.relatedProducts.length > 0 && (
+      {blog.relatedProducts?.length > 0 && (
         <section className="px-4 sm:px-6 lg:px-8 py-14 sm:py-20 border-t-2 border-blue-100 bg-white">
           <div className="max-w-[1180px] mx-auto">
             <span className="flex h-1 w-16 overflow-hidden rounded-full">

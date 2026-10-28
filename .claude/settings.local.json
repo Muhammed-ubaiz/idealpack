@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:idealpackstore.com)",
+      "Bash(timeout 120 npx vite build)",
+      "Bash(kill 1040)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(grep -nE \"shortDescription: '.{0,90}',$\" src/data/products.js)",
+      "Bash(timeout 180 npx vite build)",
+      "WebFetch(domain:unsplash.com)"
+    ]
+  }
+}

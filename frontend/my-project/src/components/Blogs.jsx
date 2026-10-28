@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { blogs, formatDate } from '../data/blogs'
+import { formatDate } from '../data/blogs'
+import { useBlogs } from '../lib/blogStore'
 import BlogCta from './BlogCta'
 
-const featured = blogs.find((b) => b.featured) || blogs[0]
-const rest = blogs.filter((b) => b !== featured)
-
 function Blogs() {
+  const { blogs } = useBlogs()
+  const featured = blogs.find((b) => b.featured) || blogs[0]
+  const rest = blogs.filter((b) => b !== featured)
+
   return (
     <div className="bg-white">
       {/* HERO */}

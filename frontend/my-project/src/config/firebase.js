@@ -30,9 +30,14 @@ if (import.meta.env.DEV) {
   }
 }
 
+/** False until the VITE_FIREBASE_* values are filled in. */
+export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId)
+
 const app = initializeApp(firebaseConfig)
 
-export const auth = getAuth(app)
+// getAuth() throws on a missing API key, which would crash the whole site,
+// so auth is null until Firebase is configured.
+export const auth = isFirebaseConfigured ? getAuth(app) : null
 export const db = getFirestore(app)
 export const storage = getStorage(app)
 
